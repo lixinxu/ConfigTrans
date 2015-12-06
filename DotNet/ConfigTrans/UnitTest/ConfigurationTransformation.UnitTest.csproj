@@ -58,6 +58,7 @@
     <Compile Include="UtilityUnitTest.cs" />
     <Compile Include="XmlNamesUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XPathInformationUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Source\ConfigurationTransformation.Source.csproj">

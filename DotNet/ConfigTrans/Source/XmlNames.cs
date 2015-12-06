@@ -207,7 +207,7 @@ namespace ConfigurationTransformation
         public string PathNameAttribute { get; private set; }
 
         /// <summary>
-        /// Gets the name of XPath of the XPath value
+        /// Gets the name of attribute which saves XPath value
         /// </summary>
         [ConfigurationItem("path")]
         public string PathValueAttribute { get; private set; }

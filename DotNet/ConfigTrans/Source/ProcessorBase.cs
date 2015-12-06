@@ -12,12 +12,13 @@ namespace ConfigurationTransformation
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
+    using static Utility;
 
     public class ProcessorBase
     {
         private static readonly XmlNames names = new XmlNames();
 
-        protected void Process(XmlElement masterXml, XmlElement manifest, string outputLocation, object state = null)
+        protected void Process(XmlElement masterXml, XmlElement manifest, string outputLocation = null, object state = null)
         {
             if (masterXml == null)
             {
@@ -28,6 +29,10 @@ namespace ConfigurationTransformation
             {
                 throw new ArgumentNullException(nameof(manifest));
             }
+
+            var outputFormat = GetRequiredAttribute(manifest, names.OutputFormatAttribute).Trim();
+            var pathCollection = new XPathCollection(manifest, names);
+            //var sectionsToProcess = GetSections(diffConfig);
         }
 
         #region helper
