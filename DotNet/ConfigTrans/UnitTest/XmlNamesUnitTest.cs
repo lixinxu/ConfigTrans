@@ -6,12 +6,13 @@
 
 namespace ConfigurationTransformation.UnitTest
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Specialized;
     using System.Configuration;
     using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
     /// Test XML name configuration
@@ -74,14 +75,24 @@ namespace ConfigurationTransformation.UnitTest
             AssertNameValueCollectionAreEqual(configuration, updated);
         }
 
-        private void TestNullOrEmptyConfig(NameValueCollection configuration)
+        #region helper
+        /// <summary>
+        /// Test XML names class when configuration parameter is null or empty collection
+        /// </summary>
+        /// <param name="configuration">configuration collection</param>
+        private static void TestNullOrEmptyConfig(NameValueCollection configuration)
         {
             var instance = new XmlNames(configuration);
             var updated = GetUpdatedItems(instance);
             Assert.AreEqual(0, updated.Count);
         }
 
-        private NameValueCollection GetUpdatedItems(XmlNames instance)
+        /// <summary>
+        /// Get items when their values are updated
+        /// </summary>
+        /// <param name="instance">XML names instance</param>
+        /// <returns>Updated items and their values</returns>
+        private static NameValueCollection GetUpdatedItems(XmlNames instance)
         {
             var valueCollection = new NameValueCollection();
             ProcessProperties(
@@ -97,11 +108,15 @@ namespace ConfigurationTransformation.UnitTest
             return valueCollection;
         }
 
-        private NameValueCollection GetDefaultValues()
+        /// <summary>
+        /// Get default values
+        /// </summary>
+        /// <returns>default value collection</returns>
+        private static NameValueCollection GetDefaultValues()
         {
             var valueCollection = new NameValueCollection();
             ProcessProperties(
-                (propertyInformation, configurationAttribute)=>
+                (propertyInformation, configurationAttribute) =>
                 {
                     valueCollection[propertyInformation.Name] = configurationAttribute.DefaultValue;
                 });
@@ -109,7 +124,11 @@ namespace ConfigurationTransformation.UnitTest
             return valueCollection;
         }
 
-        private void ProcessProperties(Action<PropertyInfo, XmlNames.ConfigurationItemAttribute> processItem)
+        /// <summary>
+        /// Helper to go through all properties
+        /// </summary>
+        /// <param name="processItem">the action to process each property</param>
+        private static void ProcessProperties(Action<PropertyInfo, XmlNames.ConfigurationItemAttribute> processItem)
         {
             var type = typeof(XmlNames);
             var propertyInformationCollection = type.GetProperties();
@@ -124,6 +143,11 @@ namespace ConfigurationTransformation.UnitTest
             }
         }
 
+        /// <summary>
+        /// Compare tow Name-Value collection, assert they are same
+        /// </summary>
+        /// <param name="expected">expected collection</param>
+        /// <param name="actual">actual collection</param>
         private static void AssertNameValueCollectionAreEqual(NameValueCollection expected, NameValueCollection actual)
         {
             Assert.AreEqual(expected.Count, actual.Count);
@@ -134,5 +158,6 @@ namespace ConfigurationTransformation.UnitTest
                 Assert.AreEqual(expected[key], value);
             }
         }
+        #endregion helper
     }
 }

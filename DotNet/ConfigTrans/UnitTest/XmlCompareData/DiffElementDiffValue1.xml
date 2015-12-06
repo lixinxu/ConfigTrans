@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <a at1="1" at2="2">
+    <b>data</b>
+    <c><![CDATA[this is data]]></c>
+  </a>
+</root>

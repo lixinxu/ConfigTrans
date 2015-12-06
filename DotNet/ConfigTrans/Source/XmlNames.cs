@@ -36,27 +36,43 @@ namespace ConfigurationTransformation
     public class XmlNames
     {
         /// <summary>
-        /// Attribute to describe property
+        /// Initializes a new instance of the <see cref="XmlNames" /> class.
         /// </summary>
         /// <remarks>
-        /// It will help the XML names class to load configuration by reflection. It also cover default value if configuration entry was
-        /// not created in the configuration file.
+        /// It loads value from application configuration
         /// </remarks>
-        [AttributeUsage(AttributeTargets.Property)]
-        public class ConfigurationItemAttribute : Attribute
+        public XmlNames() : this(ConfigurationManager.AppSettings)
         {
-            /// <summary>
-            /// Gets property default value
-            /// </summary>
-            public string DefaultValue { get; private set; }
+        }
 
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ConfigurationItemAttribute" /> class.
-            /// </summary>
-            /// <param name="defaultValue">default value</param>
-            public ConfigurationItemAttribute(string defaultValue)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmlNames" /> class.
+        /// </summary>
+        /// <param name="configurations">It load values from given configuration collection</param>
+        /// <remarks>
+        /// This will be used by unit test
+        /// </remarks>
+        public XmlNames(NameValueCollection configurations)
+        {
+            var propertyInformationCollection = this.GetType().GetProperties();
+            foreach (var propertyInformation in propertyInformationCollection)
             {
-                this.DefaultValue = defaultValue;
+                var attribute = propertyInformation.GetCustomAttribute<ConfigurationItemAttribute>(true);
+                if (attribute != null)
+                {
+                    string value = null;
+                    if (configurations != null)
+                    {
+                        value = configurations[propertyInformation.Name];
+                    }
+
+                    if (value == null)
+                    {
+                        value = attribute.DefaultValue;
+                    }
+
+                    propertyInformation.SetValue(this, value);
+                }
             }
         }
 
@@ -123,7 +139,7 @@ namespace ConfigurationTransformation
         public string PathElementName { get; private set; }
 
         /// <summary>
-        /// The name of XPath alias indicator attribute. The indicator tells the processor a string is not a XPath but an alias
+        /// Gets the name of XPath alias indicator attribute. The indicator tells the processor a string is not a XPath but an alias
         /// </summary>
         /// <remarks>
         /// <para>It gives an flexibility to use different indicator based on users preference. It also can void potential problem if the 
@@ -265,7 +281,7 @@ namespace ConfigurationTransformation
         public string TransformParameterAttribute { get; private set; }
 
         /// <summary>
-        /// Get the name of the attribute which used to create new attribute.
+        /// Gets the name of the attribute which used to create new attribute.
         /// </summary>
         [ConfigurationItem("name")]
         public string TransformNameAttribute { get; private set; }
@@ -278,7 +294,7 @@ namespace ConfigurationTransformation
         #endregion Transformation command
 
         /// <summary>
-        /// Get the name of sections element
+        /// Gets the name of sections element
         /// </summary>
         [ConfigurationItem("sections")]
         public string SectionsElementName { get; private set; }
@@ -296,48 +312,34 @@ namespace ConfigurationTransformation
         public string SectionElementName { get; private set; }
 
         /// <summary>
-        /// Get the name of section name attribute
+        /// Gets the name of section name attribute
         /// </summary>
         [ConfigurationItem("name")]
         public string SectionNameAttribute { get; private set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmlNames" /> class.
+        /// Attribute to describe property
         /// </summary>
         /// <remarks>
-        /// It loads value from application configuration
+        /// It will help the XML names class to load configuration by reflection. It also cover default value if configuration entry was
+        /// not created in the configuration file.
         /// </remarks>
-        public XmlNames() : this(ConfigurationManager.AppSettings)
+        [AttributeUsage(AttributeTargets.Property)]
+        public class ConfigurationItemAttribute : Attribute
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="XmlNames" /> class.
-        /// </summary>
-        /// <param name="configurations">It load values from given configuration collection</param>
-        /// <remarks>
-        /// This will be used by unit test
-        /// </remarks>
-        public XmlNames(NameValueCollection configurations)
-        {
-            var propertyInformationCollection = this.GetType().GetProperties();
-            foreach (var propertyInformation in propertyInformationCollection)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ConfigurationItemAttribute" /> class.
+            /// </summary>
+            /// <param name="defaultValue">default value</param>
+            public ConfigurationItemAttribute(string defaultValue)
             {
-                var attribute = propertyInformation.GetCustomAttribute<ConfigurationItemAttribute>(true);
-                if (attribute != null)
-                {
-                    string value = null;
-                    if (configurations != null)
-                    {
-                        value = configurations[propertyInformation.Name];
-                    }
-                    if (value == null)
-                    {
-                        value = attribute.DefaultValue;
-                    }
-                    propertyInformation.SetValue(this, value);
-                }
+                this.DefaultValue = defaultValue;
             }
+
+            /// <summary>
+            /// Gets property default value
+            /// </summary>
+            public string DefaultValue { get; private set; }
         }
     }
 }

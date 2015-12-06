@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,6 +54,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TestUtility.cs" />
+    <Compile Include="UtilityUnitTest.cs" />
     <Compile Include="XmlNamesUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -64,6 +67,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="TransformData\web.dev-eastus.config" />
+    <EmbeddedResource Include="TransformData\web.dev-westus.config" />
+    <EmbeddedResource Include="TransformData\web.prod-eastus.config" />
+    <EmbeddedResource Include="TransformData\web.prod-westus.config" />
+    <EmbeddedResource Include="TransformData\web.uat-eastus.config" />
+    <EmbeddedResource Include="TransformData\web.uat-westus.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TransformData\DiffConfig.xml" />
+    <EmbeddedResource Include="TransformData\MasterConfig.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffAttr1.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffAttr2.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffAttrDiffValue1.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffAttrDiffValue2.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffElementAddChild1.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffElementAddChild2.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffElementDiffValue1.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffElementDiffValue2.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffElementNameChanged1.xml" />
+    <EmbeddedResource Include="XmlCompareData\DiffElementNameChanged2.xml" />
+    <EmbeddedResource Include="XmlCompareData\SameAttrDiffOrder1.xml" />
+    <EmbeddedResource Include="XmlCompareData\SameAttrDiffOrder2.xml" />
+    <EmbeddedResource Include="XmlCompareData\SameAttrSameOrder1.xml" />
+    <EmbeddedResource Include="XmlCompareData\SameAttrSameOrder2.xml" />
+    <EmbeddedResource Include="XmlCompareData\SameElement1.xml" />
+    <EmbeddedResource Include="XmlCompareData\SameElement2.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
