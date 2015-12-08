@@ -272,6 +272,56 @@ namespace ConfigurationTransformation.UnitTest
         /// Test GetPath() use parameter
         /// </summary>
         [TestMethod]
+        public void XPathCollection_GetPath_InvalidAlias()
+        {
+            var aliasIndicator = "##";
+            var placeholder = "{data}";
+
+            var names = GetXmlNames();
+            var pathXml = CreatePathXml(
+                aliasIndicator,
+                placeholder,
+                new Dictionary<string, string>()
+                {
+                    { "key", "value" },
+                },
+                names);
+            var collection = new XPathCollection(pathXml, names);
+
+            var key = aliasIndicator + "NotExist";
+            string message = null;
+            try
+            {
+                var actual = collection.GetPath(key, null);
+            }
+            catch (ArgumentException exception)
+            {
+                message = exception.Message;
+            }
+
+            Assert.IsNotNull(message);
+            Assert.IsTrue(message.Contains(key));
+        }
+
+        /// <summary>
+        /// Test GetPath() use parameter
+        /// </summary>
+        [TestMethod]
+        public void XPathCollection_GetPath_NoPathDefined()
+        {
+            var names = GetXmlNames();
+            var collection = new XPathCollection(null, names);
+
+            var key = XPathCollectionForTest.GetDefaultAliasIndicator() + "key";
+            var actual = collection.GetPath(key, null);
+
+            Assert.AreEqual(key, actual);
+        }
+
+        /// <summary>
+        /// Test GetPath() use parameter
+        /// </summary>
+        [TestMethod]
         public void XPathCollection_GetPath_NotParameterRequiredButProvidedOne()
         {
             var aliasIndicator = "##";
@@ -393,9 +443,18 @@ namespace ConfigurationTransformation.UnitTest
             /// Gets default indicator
             /// </summary>
             /// <returns>indicator name</returns>
-            internal string GetDefaultAliasIndicator()
+            internal static string GetDefaultAliasIndicator()
             {
                 return XPathCollectionForTest.DefaultAliasIndicator;
+            }
+
+            /// <summary>
+            /// Gets default parameter placeholder
+            /// </summary>
+            /// <returns>placeholder string</returns>
+            internal static string GetDefaultParameterPlaceholder()
+            {
+                return XPathCollectionForTest.DefaultParameterPlaceholder;
             }
 
             /// <summary>
@@ -405,15 +464,6 @@ namespace ConfigurationTransformation.UnitTest
             internal string GetAliasIndicator()
             {
                 return this.AliasIndicator;
-            }
-
-            /// <summary>
-            /// Gets default parameter placeholder
-            /// </summary>
-            /// <returns>placeholder string</returns>
-            internal string GetDefaultParameterPlaceholder()
-            {
-                return XPathCollectionForTest.DefaultParameterPlaceholder;
             }
 
             /// <summary>
