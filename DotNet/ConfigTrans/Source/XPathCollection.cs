@@ -20,68 +20,47 @@ namespace ConfigurationTransformation
         /// <summary>
         /// Default path alias indicator
         /// </summary>
-        private const string DefaultAliasIndicator = "#";
+        protected const string DefaultAliasIndicator = "#";
 
         /// <summary>
         /// Default path parameter placeholder
         /// </summary>
-        private const string DefaultParameterPlaceholder = "{parameter}";
-
-        /// <summary>
-        /// Gets alias indicator
-        /// </summary>
-        private string aliasIndicator;
-
-        /// <summary>
-        /// Parameter placeholder
-        /// </summary>
-        private string parameterPlaceholder;
-
-        /// <summary>
-        /// Path collection
-        /// </summary>
-        private IReadOnlyDictionary<string, XPathInformation> pathCollection;
+        protected const string DefaultParameterPlaceholder = "{parameter}";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XPathCollection" /> class.
         /// </summary>
-        /// <param name="manifest">manifest XML</param>
+        /// <param name="pathRootElement">path collection XML root element</param>
         /// <param name="names">XML names</param>
-        public XPathCollection(XmlElement manifest, XmlNames names)
+        public XPathCollection(XmlElement pathRootElement, XmlNames names)
         {
-            if (manifest == null)
-            {
-                throw new ArgumentNullException(nameof(manifest));
-            }
-
             if (names == null)
             {
                 throw new ArgumentNullException(nameof(names));
             }
 
             var collection = new Dictionary<string, XPathInformation>();
-            this.pathCollection = collection;
-            var collectionElement = manifest.SelectSingleNode(names.PathElementName) as XmlElement;
-            if (collectionElement == null)
+            this.PathCollection = collection;
+            if (pathRootElement == null)
             {
-                this.aliasIndicator = DefaultAliasIndicator;
-                this.parameterPlaceholder = DefaultParameterPlaceholder;
+                this.AliasIndicator = null;
+                this.ParameterPlaceholder = null;
             }
             else
             {
-                this.aliasIndicator = GetAttribute(
-                    collectionElement, 
-                    names.PathAliasIndicatorAttribute, 
+                this.AliasIndicator = GetAttribute(
+                    pathRootElement,
+                    names.PathAliasIndicatorAttribute,
                     DefaultAliasIndicator);
-                this.parameterPlaceholder = GetAttribute(
-                    collectionElement, 
-                    names.PathParameterPlaceHolderAttribute, 
+                this.ParameterPlaceholder = GetAttribute(
+                    pathRootElement,
+                    names.PathParameterPlaceholderAttribute,
                     DefaultParameterPlaceholder);
-                foreach (XmlElement pathElement in collectionElement.SelectNodes(names.PathAddElementName))
+                foreach (XmlElement pathElement in pathRootElement.SelectNodes(names.PathAddElementName))
                 {
                     if (pathElement != null)
                     {
-                        var pathInformation = new XPathInformation(pathElement, names, this.parameterPlaceholder);
+                        var pathInformation = new XPathInformation(pathElement, names, this.ParameterPlaceholder);
                         if (collection.ContainsKey(pathInformation.Name))
                         {
                             var message = string.Format(
@@ -97,6 +76,21 @@ namespace ConfigurationTransformation
                 }
             }
         }
+
+        /// <summary>
+        /// Gets alias indicator
+        /// </summary>
+        protected string AliasIndicator { get; private set; }
+
+        /// <summary>
+        /// Gets parameter placeholder
+        /// </summary>
+        protected string ParameterPlaceholder { get; private set; }
+
+        /// <summary>
+        /// Gets path collection
+        /// </summary>
+        protected IReadOnlyDictionary<string, XPathInformation> PathCollection { get; private set; }
 
         /// <summary>
         /// Get XPath
@@ -117,12 +111,12 @@ namespace ConfigurationTransformation
             }
 
             var finalPath = path;
-            bool hasParameterPlaceholder = true;
-            if (path.StartsWith(this.aliasIndicator, false, CultureInfo.InvariantCulture))
+            bool hasParameterPlaceholder = this.ParameterPlaceholder != null;
+            if ((this.AliasIndicator != null) && path.StartsWith(this.AliasIndicator, false, CultureInfo.InvariantCulture))
             {
-                var alias = path.Substring(this.aliasIndicator.Length);
+                var alias = path.Substring(this.AliasIndicator.Length);
                 XPathInformation pathInformation;
-                if (!this.pathCollection.TryGetValue(alias, out pathInformation))
+                if (!this.PathCollection.TryGetValue(alias, out pathInformation))
                 {
                     var message = string.Format(
                         CultureInfo.InvariantCulture,
@@ -137,7 +131,7 @@ namespace ConfigurationTransformation
 
             if (hasParameterPlaceholder)
             {
-                finalPath = finalPath.Replace(this.parameterPlaceholder, parameter);
+                finalPath = finalPath.Replace(this.ParameterPlaceholder, parameter);
             }
             else if (!string.IsNullOrEmpty(parameter))
             {
@@ -145,7 +139,7 @@ namespace ConfigurationTransformation
                     CultureInfo.InvariantCulture,
                     "XPath does not accept parameter but parameter is provided. Parameter:\"{1}\". XPath:{1}",
                     parameter,
-                    finalPath);
+                    path);
                 throw new ArgumentException(message);
             }
 

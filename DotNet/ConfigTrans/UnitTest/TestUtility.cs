@@ -7,6 +7,7 @@
 namespace ConfigurationTransformation.UnitTest
 {
     using System;
+    using System.Collections.Specialized;
     using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
     using System.Xml;
@@ -22,7 +23,7 @@ namespace ConfigurationTransformation.UnitTest
         /// <summary>
         /// XML names which can be shared by all unit tests
         /// </summary>
-        private static readonly XmlNames names = new XmlNames();
+        private static readonly XmlNames DefaultXmlNames = new XmlNames();
 
         /// <summary>
         /// Load XML from assembly
@@ -31,12 +32,13 @@ namespace ConfigurationTransformation.UnitTest
         /// <param name="folder">folder related to type location</param>
         /// <param name="type">type which at same location of the file. Use utility type of type is not specified</param>
         /// <returns>XML from assembly</returns>
-        public static XmlElement LoadXml(string name, string folder = null, Type type=null)
+        public static XmlElement LoadXml(string name, string folder = null, Type type = null)
         {
             if (type == null)
             {
                 type = typeof(TestUtility);
             }
+
             XmlElement xml;
             using (var stream = type.Assembly.GetManifestResourceStream(type, folder + name))
             {
@@ -44,6 +46,7 @@ namespace ConfigurationTransformation.UnitTest
                 doc.Load(stream);
                 xml = doc.DocumentElement;
             }
+
             return xml;
         }
 
@@ -88,6 +91,7 @@ namespace ConfigurationTransformation.UnitTest
                     methodInformation = type.GetMethod(methodName, bindingFlags, null, methodTypes, null);
                 }
             }
+
             Assert.IsNotNull(methodInformation);
             var parameterInformationList = methodInformation.GetParameters();
             Assert.IsNotNull(parameterInformationList);
@@ -101,7 +105,29 @@ namespace ConfigurationTransformation.UnitTest
         /// <returns>XML names instance</returns>
         public static XmlNames GetXmlNames()
         {
-            return names;
+            return DefaultXmlNames;
+        }
+
+        /// <summary>
+        /// Create random XML element/attribute names
+        /// </summary>
+        /// <returns>new XmlNames instances with random names</returns>
+        public static XmlNames GetRandomXmlNames()
+        {
+            var defaultNames = GetXmlNames();
+            var propertyInformationList = defaultNames.GetType().GetProperties();
+            var newXmlNameValues = new NameValueCollection(propertyInformationList.Length);
+            foreach (var propertyInformation in propertyInformationList)
+            {
+                var attribute = propertyInformation.GetCustomAttribute<XmlNames.ConfigurationItemAttribute>(true);
+                if (attribute != null)
+                {
+                    var value = propertyInformation.GetValue(defaultNames) as string;
+                    newXmlNameValues.Add(propertyInformation.Name, value + Guid.NewGuid().ToString("N"));
+                }
+            }
+
+            return new XmlNames(newXmlNameValues);
         }
 
         /// <summary>

@@ -163,7 +163,7 @@ namespace ConfigurationTransformation
         /// </manifest> 
         /// ]]>
         /// </example>
-        [ConfigurationItem("#")]
+        [ConfigurationItem("indicator")]
         public string PathAliasIndicatorAttribute { get; private set; }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace ConfigurationTransformation
         /// <para>The sample above shows how to use "argument" as XPath parameter</para>
         /// </example>
         [ConfigurationItem("parameter")]
-        public string PathParameterPlaceHolderAttribute { get; private set; }
+        public string PathParameterPlaceholderAttribute { get; private set; }
 
         /// <summary>
         /// Gets the attribute name of XPath alias
