@@ -31,7 +31,7 @@ namespace ConfigurationTransformation
             }
 
             var outputFormat = GetRequiredAttribute(manifest, names.OutputFormatAttribute).Trim();
-            var pathCollection = new XPathCollection(manifest, names);
+            var pathCollection = new XPathCollection(manifest.SelectSingleNode(names.PathElementName) as XmlElement, names);
             //var sectionsToProcess = GetSections(diffConfig);
         }
 

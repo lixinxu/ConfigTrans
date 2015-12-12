@@ -137,7 +137,7 @@ namespace ConfigurationTransformation
             {
                 var message = string.Format(
                     CultureInfo.InvariantCulture,
-                    "XPath does not accept parameter but parameter is provided. Parameter:\"{1}\". XPath:{1}",
+                    "XPath does not accept parameter but parameter is provided. Parameter:\"{0}\". XPath:{1}",
                     parameter,
                     path);
                 throw new ArgumentException(message);
