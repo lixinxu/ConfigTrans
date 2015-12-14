@@ -7,6 +7,7 @@
 namespace ConfigurationTransformation.UnitTest
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Diagnostics.CodeAnalysis;
     using System.Reflection;
@@ -24,6 +25,39 @@ namespace ConfigurationTransformation.UnitTest
         /// XML names which can be shared by all unit tests
         /// </summary>
         private static readonly XmlNames DefaultXmlNames = new XmlNames();
+
+        /// <summary>
+        /// All possible booleans
+        /// </summary>
+        private static readonly bool[] AllBooleans = new bool[] { true, false };
+
+        /// <summary>
+        /// Get XML names
+        /// </summary>
+        /// <returns>XML names instance</returns>
+        public static XmlNames GetXmlNames()
+        {
+            return DefaultXmlNames;
+        }
+
+        /// <summary>
+        /// Get all possible boolean values
+        /// </summary>
+        /// <returns>boolean values</returns>
+        public static IReadOnlyList<bool> GetAllBooleans()
+        {
+            return AllBooleans;
+        }
+
+        /// <summary>
+        /// Create random string
+        /// </summary>
+        /// <param name="prefix">string prefix</param>
+        /// <returns>random string with GUID appended</returns>
+        public static string CreateRandomName(string prefix)
+        {
+            return prefix + Guid.NewGuid().ToString("N");
+        }
 
         /// <summary>
         /// Load XML from assembly
@@ -100,15 +134,6 @@ namespace ConfigurationTransformation.UnitTest
         }
 
         /// <summary>
-        /// Get XML names
-        /// </summary>
-        /// <returns>XML names instance</returns>
-        public static XmlNames GetXmlNames()
-        {
-            return DefaultXmlNames;
-        }
-
-        /// <summary>
         /// Create random XML element/attribute names
         /// </summary>
         /// <returns>new XmlNames instances with random names</returns>
@@ -123,7 +148,7 @@ namespace ConfigurationTransformation.UnitTest
                 if (attribute != null)
                 {
                     var value = propertyInformation.GetValue(defaultNames) as string;
-                    newXmlNameValues.Add(propertyInformation.Name, value + Guid.NewGuid().ToString("N"));
+                    newXmlNameValues.Add(propertyInformation.Name, CreateRandomName(value));
                 }
             }
 
@@ -146,6 +171,58 @@ namespace ConfigurationTransformation.UnitTest
                 var attribute = element.OwnerDocument.CreateAttribute(name);
                 attribute.Value = value;
                 element.Attributes.Append(attribute);
+            }
+        }
+
+        /// <summary>
+        /// Gets default XPath alias indicator
+        /// </summary>
+        /// <returns>indicator name</returns>
+        public static string GetDefaultXPathAliasIndicator()
+        {
+            return XPathCollectionForUtility.GetDefaultAliasIndicator();
+        }
+
+        /// <summary>
+        /// Gets default XPath parameter placeholder
+        /// </summary>
+        /// <returns>placeholder string</returns>
+        public static string GetDefaultXPathParameterPlaceholder()
+        {
+            return XPathCollectionForUtility.GetDefaultParameterPlaceholder();
+        }
+
+        /// <summary>
+        /// Dummy class to retrieve internal information
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        private class XPathCollectionForUtility : XPathCollection
+        {
+            /// <summary>
+            /// Initializes a new instance of the<see cref="XPathCollectionForUtility" /> class.
+            /// </summary>
+            /// <param name="pathRootElement">path root element</param>
+            /// <param name="names">XML names</param>
+            internal XPathCollectionForUtility(XmlElement pathRootElement, XmlNames names) : base(pathRootElement, names)
+            {
+            }
+
+            /// <summary>
+            /// Gets default indicator
+            /// </summary>
+            /// <returns>indicator name</returns>
+            internal static string GetDefaultAliasIndicator()
+            {
+                return XPathCollectionForUtility.DefaultAliasIndicator;
+            }
+
+            /// <summary>
+            /// Gets default parameter placeholder
+            /// </summary>
+            /// <returns>placeholder string</returns>
+            internal static string GetDefaultParameterPlaceholder()
+            {
+                return XPathCollectionForUtility.DefaultParameterPlaceholder;
             }
         }
     }

@@ -41,29 +41,18 @@ namespace ConfigurationTransformation
                 throw new ArgumentException(message);
             }
 
-            const string MessageFormat = "{0} element requires \"{1}\" attribute. These attribute value should not be empty or blank. XML:{2}";
             var name = GetAttribute(pathElement, names.PathNameAttribute);
             if (name == null)
             {
-                var message = string.Format(
-                    CultureInfo.InvariantCulture,
-                    MessageFormat,
-                    names.PathElementName,
-                    names.PathNameAttribute,
-                    pathElement.OuterXml);
-                throw new ArgumentException(message);
+                var message = $"{names.PathElementName} element requires '{names.PathNameAttribute}' attribute. These attribute value should not be empty or blank. XML:{pathElement.OuterXml}";
+                throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
             }
 
             var path = GetAttribute(pathElement, names.PathValueAttribute);
             if (path == null)
             {
-                var message = string.Format(
-                    CultureInfo.InvariantCulture,
-                    MessageFormat,
-                    names.PathElementName,
-                    names.PathValueAttribute,
-                    pathElement.OuterXml);
-                throw new ArgumentException(message);
+                var message = $"{names.PathElementName} element requires '{names.PathValueAttribute}' attribute. These attribute value should not be empty or blank. XML:{pathElement.OuterXml}";
+                throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
             }
 
             this.Name = name;
@@ -72,7 +61,7 @@ namespace ConfigurationTransformation
         }
 
         /// <summary>
-        /// Gets path alias
+        /// Gets  path alias
         /// </summary>
         public string Name { get; private set; }
 

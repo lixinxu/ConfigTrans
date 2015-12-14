@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConfigurationTransformation.UnitTest</RootNamespace>
     <AssemblyName>ConfigurationTransformationUnitTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,7 +55,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ConfigurationXmlUtility.cs" />
+    <Compile Include="ManifestXmlUtility.cs" />
     <Compile Include="TestUtility.cs" />
+    <Compile Include="TransformationCommandUnitTest.cs">
+      <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="UtilityUnitTest.cs" />
     <Compile Include="XmlNamesUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +101,12 @@
     <EmbeddedResource Include="XmlCompareData\SameAttrSameOrder2.xml" />
     <EmbeddedResource Include="XmlCompareData\SameElement1.xml" />
     <EmbeddedResource Include="XmlCompareData\SameElement2.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TransformationCommandTestData\AddAttribute1.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TransformationCommandTestData\AddAttribute2.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

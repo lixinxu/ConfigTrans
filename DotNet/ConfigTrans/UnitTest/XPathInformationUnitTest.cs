@@ -12,6 +12,7 @@ namespace ConfigurationTransformation.UnitTest
     using System.Reflection;
     using System.Xml;
 
+    using static ManifestXmlUtility;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using static TestUtility;
 
@@ -74,7 +75,7 @@ namespace ConfigurationTransformation.UnitTest
         public void XPathInformation_Constructor_NullPlaceholder()
         {
             string message = null;
-            var element = CreatePathXml("abc", "path");
+            var element = CreatePathInformationXml("abc", "path");
             try
             {
                 var information = new XPathInformation(element, GetXmlNames(), null);
@@ -96,7 +97,7 @@ namespace ConfigurationTransformation.UnitTest
         public void XPathInformation_Constructor_EmptyPlaceholder()
         {
             string message = null;
-            var element = CreatePathXml("abc", "path");
+            var element = CreatePathInformationXml("abc", "path");
             try
             {
                 var information = new XPathInformation(element, GetXmlNames(), string.Empty);
@@ -157,7 +158,7 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void XPathInformation_Constructor_NormalAliasName()
         {
-            TestAlias("name" + Guid.NewGuid().ToString("N"));
+            TestAlias(CreateRandomName("name"));
         }
 
         /// <summary>
@@ -206,7 +207,7 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void XPathInformation_Constructor_NormalPath()
         {
-            TestPath("name" + Guid.NewGuid().ToString("N"));
+            TestPath(CreateRandomName("name"));
         }
 
         /// <summary>
@@ -215,8 +216,8 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void XPathInformation_Constructor_NoPlaceholder()
         {
-            var placeholder = "{Placeholder" + Guid.NewGuid().ToString("N") + "}";
-            var path = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var placeholder = "{" + CreateRandomName("Placeholder") + "}";
+            var path = $"{Guid.NewGuid()}{Guid.NewGuid()}{Guid.NewGuid()}".ToString(CultureInfo.InvariantCulture);
             TestPlaceholder(path, placeholder);
         }
 
@@ -226,8 +227,8 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void XPathInformation_Constructor_HasPlaceholder()
         {
-            var placeholder = "{Placeholder" + Guid.NewGuid().ToString("N") + "}";
-            var path = string.Format(CultureInfo.InvariantCulture, "{0}{1}{2}", Guid.NewGuid(), placeholder, Guid.NewGuid());
+            var placeholder = "{" + CreateRandomName("Placeholder") + "}";
+            var path = $"{Guid.NewGuid()}{placeholder}{Guid.NewGuid()}".ToString(CultureInfo.InvariantCulture);
             TestPlaceholder(path, placeholder);
         }
 
@@ -247,29 +248,12 @@ namespace ConfigurationTransformation.UnitTest
         }
 
         /// <summary>
-        /// Create path XML
-        /// </summary>
-        /// <param name="name">name attribute</param>
-        /// <param name="path">path attribute</param>
-        /// <returns>path XML</returns>
-        private static XmlElement CreatePathXml(string name, string path)
-        {
-            var names = GetXmlNames();
-            var document = new XmlDocument();
-            var element = document.CreateElement(names.PathElementName);
-            document.AppendChild(element);
-            AddAttribute(element, names.PathNameAttribute, name);
-            AddAttribute(element, names.PathValueAttribute, path);
-            return element;
-        }
-
-        /// <summary>
         /// Test path name
         /// </summary>
         /// <param name="alias">path name</param>
         private static void TestAlias(string alias)
         {
-            var element = CreatePathXml(alias, "path" + Guid.NewGuid().ToString("N"));
+            var element = CreatePathInformationXml(alias, CreateRandomName("path"));
             var pathInformation = new XPathInformation(element, GetXmlNames(), "placeholder");
             Assert.AreEqual(alias, pathInformation.Name);
         }
@@ -280,7 +264,7 @@ namespace ConfigurationTransformation.UnitTest
         /// <param name="path">XPath to test</param>
         private static void TestPath(string path)
         {
-            var element = CreatePathXml("alias" + Guid.NewGuid().ToString("N"), path);
+            var element = CreatePathInformationXml(CreateRandomName("alias"), path);
             var pathInformation = new XPathInformation(element, GetXmlNames(), "placeholder");
             Assert.AreEqual(path, pathInformation.Path);
         }
@@ -292,7 +276,7 @@ namespace ConfigurationTransformation.UnitTest
         /// <param name="placeholder">parameter placeholder</param>
         private static void TestPlaceholder(string path, string placeholder)
         {
-            var element = CreatePathXml("alias" + Guid.NewGuid().ToString("N"), path);
+            var element = CreatePathInformationXml(CreateRandomName("alias"), path);
             var pathInformation = new XPathInformation(element, GetXmlNames(), placeholder);
             Assert.AreEqual(path.Contains(placeholder), pathInformation.HasParameterPlaceholder);
         }

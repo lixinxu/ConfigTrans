@@ -12,6 +12,8 @@ namespace ConfigurationTransformation.UnitTest
     using System.Globalization;
     using System.Reflection;
     using System.Xml;
+
+    using static ManifestXmlUtility;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using static TestUtility;
 
@@ -42,7 +44,7 @@ namespace ConfigurationTransformation.UnitTest
         public void XPathCollection_Constructor_NullXmlNames()
         {
             string message = null;
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 null,
                 null,
                 new Dictionary<string, string>()
@@ -78,8 +80,8 @@ namespace ConfigurationTransformation.UnitTest
             var indicator = "!!";
             var parameterPlaceholder = "{PathParam}";
             var names = GetRandomXmlNames();
-            var pathXml = CreatePathXml(indicator, parameterPlaceholder, pathAlias, names);
-            AddPath(pathXml, key, "anotherPath", names);
+            var pathXml = CreatePathCollectionXml(indicator, parameterPlaceholder, pathAlias, names);
+            AddPathToCollectionXml(pathXml, key, "anotherPath", names);
 
             string message = null;
             try
@@ -113,7 +115,7 @@ namespace ConfigurationTransformation.UnitTest
             var indicator = "!!";
             var parameterPlaceholder = "{PathParam}";
             var names = GetRandomXmlNames();
-            var pathXml = CreatePathXml(indicator, parameterPlaceholder, pathAlias, names);
+            var pathXml = CreatePathCollectionXml(indicator, parameterPlaceholder, pathAlias, names);
             var collection = new XPathCollection(pathXml, names);
 
             foreach (var pair in pathAlias)
@@ -130,7 +132,7 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void XPathCollection_GetPath_WithNullName()
         {
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 null,
                 null,
                 new Dictionary<string, string>()
@@ -160,7 +162,7 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void XPathCollection_GetPath_WithEmptyName()
         {
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 null,
                 null,
                 new Dictionary<string, string>()
@@ -193,7 +195,7 @@ namespace ConfigurationTransformation.UnitTest
             var key = "AppSettings";
             var value = "//configuration/appSettings";
             var aliasIndicator = "##";
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 aliasIndicator,
                 null,
                 new Dictionary<string, string>()
@@ -222,7 +224,7 @@ namespace ConfigurationTransformation.UnitTest
             var value1 = "//configuration/appSettings";
             var key2 = "AppSettings2";
             var value2 = $"//configuration/appSettings/add[@key='{placeholder}']/@value".ToString(CultureInfo.InvariantCulture);
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 aliasIndicator,
                 null,
                 new Dictionary<string, string>()
@@ -251,7 +253,7 @@ namespace ConfigurationTransformation.UnitTest
             var format = "//configuration/appSettings/add[@key='{0}']/@value";
             var value2 = string.Format(CultureInfo.InvariantCulture, format, placeholder);
             var names = GetXmlNames();
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 aliasIndicator,
                 placeholder,
                 new Dictionary<string, string>()
@@ -278,7 +280,7 @@ namespace ConfigurationTransformation.UnitTest
             var placeholder = "{data}";
 
             var names = GetXmlNames();
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 aliasIndicator,
                 placeholder,
                 new Dictionary<string, string>()
@@ -312,7 +314,7 @@ namespace ConfigurationTransformation.UnitTest
             var names = GetXmlNames();
             var collection = new XPathCollection(null, names);
 
-            var key = XPathCollectionForTest.GetDefaultAliasIndicator() + "key";
+            var key = GetDefaultXPathAliasIndicator() + "key";
             var actual = collection.GetPath(key, null);
 
             Assert.AreEqual(key, actual);
@@ -331,7 +333,7 @@ namespace ConfigurationTransformation.UnitTest
             var value1 = "//configuration/appSettings";
             var key2 = "AppSettings2";
             var value2 = $"//configuration/appSettings/add[@key='{placeholder}']/@value".ToString(CultureInfo.InvariantCulture);
-            var pathXml = CreatePathXml(
+            var pathXml = CreatePathCollectionXml(
                 aliasIndicator,
                 null,
                 new Dictionary<string, string>()
@@ -357,57 +359,6 @@ namespace ConfigurationTransformation.UnitTest
         }
 
         #region helper
-        /// <summary>
-        /// create path XML for test
-        /// </summary>
-        /// <param name="aliasIndicator">alias indicator</param>
-        /// <param name="parameterPlaceholder">path parameter placeholder</param>
-        /// <param name="collection">path name/value collection</param>
-        /// <param name="names">XML names</param>
-        /// <returns>path XML</returns>
-        private static XmlElement CreatePathXml(
-            string aliasIndicator,
-            string parameterPlaceholder,
-            IReadOnlyDictionary<string, string> collection,
-            XmlNames names = null)
-        {
-            if (names == null)
-            {
-                names = GetXmlNames();
-            }
-
-            var document = new XmlDocument();
-            var collectionElement = document.CreateElement(names.PathElementName);
-            document.AppendChild(collectionElement);
-            AddAttribute(collectionElement, names.PathAliasIndicatorAttribute, aliasIndicator);
-            AddAttribute(collectionElement, names.PathParameterPlaceholderAttribute, parameterPlaceholder);
-
-            if (collection != null)
-            {
-                foreach (var pair in collection)
-                {
-                    AddPath(collectionElement, pair.Key, pair.Value, names);
-                }
-            }
-
-            return collectionElement;
-        }
-
-        /// <summary>
-        /// Add a new alias to path XML
-        /// </summary>
-        /// <param name="element">path root XML</param>
-        /// <param name="name">alias name</param>
-        /// <param name="path">alias XPath</param>
-        /// <param name="names">XML names</param>
-        private static void AddPath(XmlElement element, string name, string path, XmlNames names)
-        {
-            var pathElement = element.OwnerDocument.CreateElement(names.PathAddElementName);
-            element.AppendChild(pathElement);
-            AddAttribute(pathElement, names.PathNameAttribute, name);
-            AddAttribute(pathElement, names.PathValueAttribute, path);
-        }
-
         /// <summary>
         /// Get method parameter name
         /// </summary>
@@ -437,24 +388,6 @@ namespace ConfigurationTransformation.UnitTest
             /// <param name="names">XML names</param>
             internal XPathCollectionForTest(XmlElement pathRootElement, XmlNames names) : base(pathRootElement, names)
             {
-            }
-
-            /// <summary>
-            /// Gets default indicator
-            /// </summary>
-            /// <returns>indicator name</returns>
-            internal static string GetDefaultAliasIndicator()
-            {
-                return XPathCollectionForTest.DefaultAliasIndicator;
-            }
-
-            /// <summary>
-            /// Gets default parameter placeholder
-            /// </summary>
-            /// <returns>placeholder string</returns>
-            internal static string GetDefaultParameterPlaceholder()
-            {
-                return XPathCollectionForTest.DefaultParameterPlaceholder;
             }
 
             /// <summary>
