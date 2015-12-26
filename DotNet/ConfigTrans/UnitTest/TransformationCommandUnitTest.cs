@@ -231,6 +231,64 @@ namespace ConfigurationTransformation.UnitTest
         }
         #endregion update element
 
+        #region remove attribute
+        /// <summary>
+        /// Test updating attribute using XPath in XML directly
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_RemoveAttribute_UsePath()
+        {
+            this.Test_UsePath(this.TestRemoveAttribute, true);
+        }
+
+        /// <summary>
+        /// Test updating attribute by using XPath alias but no parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_RemoveAttribute_UseAliasWithoutParameter()
+        {
+            this.TestAdd_UseAliasWithoutParameter(this.TestRemoveAttribute, true);
+        }
+
+        /// <summary>
+        /// Test updating attribute by using XPath alias with parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_RemoveAttribute_UseAliasWithParameter()
+        {
+            this.TestAdd_UseAliasWithParameter(this.TestRemoveAttribute, true);
+        }
+        #endregion remove attribute
+
+        #region remove element
+        /// <summary>
+        /// Test updating element using XPath in XML directly
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_RemoveElement_UsePath()
+        {
+            this.Test_UsePath(this.TestRemoveElement);
+        }
+
+        /// <summary>
+        /// Test updating element by using XPath alias but no parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_RemoveElement_UseAliasWithoutParameter()
+        {
+            this.TestAdd_UseAliasWithoutParameter(this.TestRemoveElement);
+        }
+
+        /// <summary>
+        /// Test updating element by using XPath alias with parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_RemoveElement_UseAliasWithParameter()
+        {
+            this.TestAdd_UseAliasWithParameter(this.TestRemoveElement);
+        }
+        #endregion remove element
+
         #region helper
         /// <summary>
         /// Get method parameter name
@@ -361,6 +419,51 @@ namespace ConfigurationTransformation.UnitTest
             }
         }
         #endregion update utility
+
+        #region remove utility
+        /// <summary>
+        /// Test transformation removing attribute
+        /// </summary>
+        /// <param name="pathCollection">XPath collection</param>
+        /// <param name="path">XPath string</param>
+        /// <param name="parameter">path parameter</param>
+        /// <param name="names">XML names</param>
+        private void TestRemoveAttribute(XPathCollection pathCollection, string path, string parameter, XmlNames names)
+        {
+            const string XmlFileBaseName = "RemoveAttribute";
+            var configurationXml = this.LoadEmbeddedXml(XmlFileBaseName, 1);
+
+            var commandXml = CreateCommandXml(names.TransformRemoveElement, path, parameter, null, null, true, names);
+            var command = new TransformationCommand(commandXml, names, pathCollection);
+
+            command.Transform(configurationXml);
+
+            var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
+            Assert.IsTrue(XmlAreSame(expected, configurationXml));
+        }
+
+        /// <summary>
+        /// Test transformation removing element
+        /// </summary>
+        /// <param name="pathCollection">XPath collection</param>
+        /// <param name="path">XPath string</param>
+        /// <param name="parameter">path parameter</param>
+        /// <param name="names">XML names</param>
+        private void TestRemoveElement(XPathCollection pathCollection, string path, string parameter, XmlNames names)
+        {
+            const string XmlFileBaseName = "RemoveElement";
+
+            var configurationXml = this.LoadEmbeddedXml(XmlFileBaseName, 1);
+
+            var commandXml = CreateCommandXml(names.TransformRemoveElement, path, parameter, null, null, true, names);
+            var command = new TransformationCommand(commandXml, names, pathCollection);
+
+            command.Transform(configurationXml);
+
+            var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
+            Assert.IsTrue(XmlAreSame(expected, configurationXml));
+        }
+        #endregion remove utility
 
         /// <summary>
         /// Test add attribute/element use XPath directly

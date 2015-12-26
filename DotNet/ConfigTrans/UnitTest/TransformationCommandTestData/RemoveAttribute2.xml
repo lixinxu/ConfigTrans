@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="item1" value="value1" />
+    <add key="item2" value="value2" />
+    <add key="item3" lockAttributes="true" />
+    <add key="item4" value="value4" />
+    <add key="item5" value="value5" />
+  </appSettings>
+</configuration>
