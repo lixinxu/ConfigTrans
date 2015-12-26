@@ -302,7 +302,7 @@ namespace ConfigurationTransformation
         /// <summary>
         /// Gets the name of scope attribute
         /// </summary>
-        [ConfigurationItem("scope")]
+        [ConfigurationItem("name")]
         public string SectionsScopeAttributeName { get; private set; }
 
         /// <summary>

@@ -1,32 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<transfor outputFormat="web.{env}-{region}.config" parameterPlacehold="{parameter}">
+<transfor fileFormat="web.{env}-{region}.config" parameterPlacehold="{parameter}">
   <path>
     <add name="AppSettingRoot" path="//configuration/appSettings" />
     <add name="AppSettingItem" path="//configuration/appSettings/add[@key='{parameter}']" />
     <add name="AppSettingAttr" path="//configuration/appSettings/add[@key='{parameter}']/@value" />
   </path>
-  <sections scope="env">
+  <sections name="env">
     <transform>
-      <update path="AppSettingAttr" param="item1" value="item1-global" />
+      <update path="#AppSettingAttr" param="item1" value="item1-global" />
     </transform>
 
     <section name="dev">
       <transform>
-        <update path="AppSettingAttr" param="item2" value="item2-dev" />
+        <update path="#AppSettingAttr" param="item2" value="item2-dev" />
       </transform>
 
-      <sections scope="region">
+      <sections name="region">
         <transform>
-          <update path="AppSettingAttr" param="item3" value="item3-dev-region" />
+          <update path="#AppSettingAttr" param="item3" value="item3-dev-region" />
         </transform>
         <section name="westus">
           <transform>
-            <update path="AppSettingAttr" param="item4" value="item4-dev-westus" />
+            <update path="#AppSettingAttr" param="item4" value="item4-dev-westus" />
           </transform>
         </section>
         <section name="eastus">
           <transform>
-            <update path="AppSettingAttr" param="item4" value="item4-dev-eastus" />
+            <update path="#AppSettingAttr" param="item4" value="item4-dev-eastus" />
           </transform>
         </section>
       </sections>
@@ -34,21 +34,21 @@
 
     <section name="prod">
       <transform>
-        <update path="AppSettingAttr" param="item2" value="item2-prod" />
+        <update path="#AppSettingAttr" param="item2" value="item2-prod" />
       </transform>
 
-      <sections scope="region">
+      <sections name="region">
         <transform>
-          <update path="AppSettingAttr" param="item3" value="item3-prod-region" />
+          <update path="#AppSettingAttr" param="item3" value="item3-prod-region" />
         </transform>
         <section name="westus">
           <transform>
-            <update path="AppSettingAttr" param="item4" value="item4-prod-westus" />
+            <update path="#AppSettingAttr" param="item4" value="item4-prod-westus" />
           </transform>
         </section>
         <section name="eastus">
           <transform>
-            <update path="AppSettingAttr" param="item4" value="item4-prod-eastus" />
+            <update path="#AppSettingAttr" param="item4" value="item4-prod-eastus" />
           </transform>
         </section>
       </sections>
@@ -56,19 +56,19 @@
 
     <section name="uat">
       <transform>
-        <remove path="AppSettingAttr" param="item2" />
+        <remove path="#AppSettingAttr" param="item2" />
       </transform>
 
-      <sections scope="region">
+      <sections name="region">
         <section name="westus">
           <transform>
-            <add path="AppSettingItem" param="item4" name="lockItem" value="true" />
+            <add path="#AppSettingItem" param="item4" name="lockItem" value="true" />
           </transform>
         </section>
         <section name="eastus">
           <transform>
-            <add path="AppSettingRoot"><![CDATA[<add key="item5" value="value5" />]]></add>
-            <remove path="AppSettingItem" param="item3" />
+            <add path="#AppSettingRoot"><![CDATA[<add key="item5" value="value5" />]]></add>
+            <remove path="#AppSettingItem" param="item3" />
           </transform>
         </section>
       </sections>

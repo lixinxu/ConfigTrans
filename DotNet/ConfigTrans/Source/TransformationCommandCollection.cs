@@ -18,14 +18,24 @@ namespace ConfigurationTransformation
     public class TransformationCommandCollection
     {
         /// <summary>
+        /// Gets container name
+        /// </summary>
+        protected readonly string Name;
+
+        /// <summary>
         /// Parent collection
         /// </summary>
-        private readonly TransformationCommandCollection host;
+        protected readonly TransformationCommandCollection Host;
 
         /// <summary>
         /// Transformation commends
         /// </summary>
-        private readonly IReadOnlyList<TransformationCommand> commands;
+        protected readonly IReadOnlyList<TransformationCommand> Commands;
+
+        /// <summary>
+        /// scope collection. for example: {"environment"="production", region="west us"}
+        /// </summary>
+        protected readonly IReadOnlyDictionary<string, string> Scopes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformationCommandCollection" /> class.
@@ -35,12 +45,14 @@ namespace ConfigurationTransformation
         /// <param name="nameAttribute">name of the attribute which can get container name from</param>
         /// <param name="pathCollection">XPath collection</param>
         /// <param name="names">XML names</param>
+        /// <param name="isScopeXml">is XML for scope</param>
         public TransformationCommandCollection(
             XmlElement containerXml, 
             TransformationCommandCollection host, 
             string nameAttribute, 
             XPathCollection pathCollection, 
-            XmlNames names)
+            XmlNames names,
+            bool isScopeXml = true)
         {
             if (containerXml == null)
             {
@@ -49,7 +61,7 @@ namespace ConfigurationTransformation
 
             if (string.IsNullOrEmpty(nameAttribute))
             {
-                var message = $"parameter {nameof(nameAttribute)} is required and should not be blank";
+                var message = $"parameter {nameof(nameAttribute)} is required and should not be blank.";
                 throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
             }
 
@@ -60,8 +72,30 @@ namespace ConfigurationTransformation
                 throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
             }
 
+            this.Scopes = null;
+            if (!isScopeXml)
+            {
+                if (host == null)
+                {
+                    var message = $"If XML is not scope XML, host should be provided because it needs scope name. XML:{containerXml.OuterXml}";
+                    throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
+                }
+
+                var currentScopes = new Dictionary<string, string>();
+                if (host.Host != null)
+                {
+                    foreach (var pair in host.Host.Scopes)
+                    {
+                        currentScopes.Add(pair.Key, pair.Value);
+                    }
+                }
+
+                currentScopes.Add(host.Name, name);
+                this.Scopes = currentScopes;
+            }
+
             this.Name = name;
-            this.host = host;
+            this.Host = host;
 
             var commandList = new List<TransformationCommand>();
             foreach (XmlElement commandRootXml in containerXml.SelectNodes(names.TransformElementName))
@@ -76,12 +110,27 @@ namespace ConfigurationTransformation
                 }
             }
 
-            this.commands = commandList;
+            this.Commands = commandList;
         }
 
         /// <summary>
-        /// Gets container name
+        /// Transform XML
         /// </summary>
-        public string Name { get; private set; }
+        /// <param name="xml">XML to transform</param>
+        /// <returns>scope collection</returns>
+        public IReadOnlyDictionary<string, string> Transform(XmlElement xml)
+        {
+            if (this.Host != null)
+            {
+                this.Host.Transform(xml);
+            }
+
+            foreach (var commnand in this.Commands)
+            {
+                commnand.Transform(xml);
+            }
+
+            return this.Scopes;
+        }
     }
 }

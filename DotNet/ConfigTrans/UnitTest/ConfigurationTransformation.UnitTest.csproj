@@ -61,6 +61,7 @@
     <Compile Include="TransformationCommandUnitTest.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="TransformerUnitTest.cs" />
     <Compile Include="UtilityUnitTest.cs" />
     <Compile Include="XmlNamesUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,16 +76,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <EmbeddedResource Include="TransformData\web.dev-eastus.config" />
-    <EmbeddedResource Include="TransformData\web.dev-westus.config" />
-    <EmbeddedResource Include="TransformData\web.prod-eastus.config" />
-    <EmbeddedResource Include="TransformData\web.prod-westus.config" />
-    <EmbeddedResource Include="TransformData\web.uat-eastus.config" />
-    <EmbeddedResource Include="TransformData\web.uat-westus.config" />
+    <EmbeddedResource Include="TransformerTestData\web.dev-eastus.config" />
+    <EmbeddedResource Include="TransformerTestData\web.dev-westus.config" />
+    <EmbeddedResource Include="TransformerTestData\web.prod-eastus.config" />
+    <EmbeddedResource Include="TransformerTestData\web.prod-westus.config" />
+    <EmbeddedResource Include="TransformerTestData\web.uat-eastus.config" />
+    <EmbeddedResource Include="TransformerTestData\web.uat-westus.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TransformData\DiffConfig.xml" />
-    <EmbeddedResource Include="TransformData\MasterConfig.xml" />
+    <EmbeddedResource Include="TransformerTestData\DiffConfig.xml" />
+    <EmbeddedResource Include="TransformerTestData\MasterConfig.xml" />
     <EmbeddedResource Include="XmlCompareData\DiffAttr1.xml" />
     <EmbeddedResource Include="XmlCompareData\DiffAttr2.xml" />
     <EmbeddedResource Include="XmlCompareData\DiffAttrDiffValue1.xml" />
