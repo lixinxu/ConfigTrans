@@ -9,6 +9,7 @@ namespace ConfigurationTransformation
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Threading.Tasks;
     using System.Xml;
     using static Utility;
 
@@ -72,9 +73,21 @@ namespace ConfigurationTransformation
                 throw new ArgumentNullException(nameof(saveTransformedXml));
             }
 
-            foreach (var transformer in this.transformations)
+            if (parallel)
             {
-                this.Transform(transformer, xml, saveTransformedXml);
+                Parallel.ForEach(
+                    this.transformations,
+                    transformer =>
+                    {
+                        this.Transform(transformer, xml, saveTransformedXml);
+                    });
+            }
+            else
+            {
+                foreach (var transformer in this.transformations)
+                {
+                    this.Transform(transformer, xml, saveTransformedXml);
+                }
             }
         }
 
@@ -115,9 +128,28 @@ namespace ConfigurationTransformation
             XmlNames names,
             bool parallel)
         {
-            foreach (XmlElement rootSectionXml in nodeList)
+            if (parallel)
             {
-                ProcessRootSection(host, rootSectionXml, pathCollection, collection, names, parallel);
+                var options = new ParallelOptions();
+                Parallel.For(
+                    0,
+                    nodeList.Count,
+                    options,
+                    (id, state) =>
+                    {
+                        var rootSectionXml = nodeList[id] as XmlElement;
+                        if (rootSectionXml != null)
+                        {
+                            ProcessRootSection(host, rootSectionXml, pathCollection, collection, names, true);
+                        }
+                    });
+            }
+            else
+            {
+                foreach (XmlElement rootSectionXml in nodeList)
+                {
+                    ProcessRootSection(host, rootSectionXml, pathCollection, collection, names, false);
+                }
             }
         }
 
@@ -146,9 +178,26 @@ namespace ConfigurationTransformation
                 throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
             }
 
-            foreach (XmlElement targetSectionXml in sections)
+            if (parallel)
             {
-                ProcessChildSection(scope, targetSectionXml, pathCollection, collection, names, parallel);
+                Parallel.For(
+                    0,
+                    sections.Count,
+                    id =>
+                    {
+                        var targetSectionXml = sections[id] as XmlElement;
+                        if (targetSectionXml != null)
+                        {
+                            ProcessChildSection(scope, targetSectionXml, pathCollection, collection, names, true);
+                        }
+                    });
+            }
+            else
+            {
+                foreach (XmlElement targetSectionXml in sections)
+                {
+                    ProcessChildSection(scope, targetSectionXml, pathCollection, collection, names, false);
+                }
             }
         }
 

@@ -71,6 +71,66 @@ namespace ConfigurationTransformation.UnitTest
         }
 
         /// <summary>
+        /// Test transformation passing master XML as null
+        /// </summary>
+        [TestMethod]
+        public void Transformer_Transform_NullXml()
+        {
+            var manifestXml = this.LoadEmbeddedXml("DiffConfig.xml");
+            var transformer = new Transformer(manifestXml, false);
+            var parameterName = GetMethodParameterName(nameof(Transformer.Transform), 0);
+
+            foreach (var parallel in GetAllBooleans())
+            {
+                string error = null;
+                try
+                {
+                    transformer.Transform(
+                        null,
+                        (outputFormat, scopes, newXml) =>
+                        {
+                        },
+                        parallel);
+                }
+                catch (ArgumentNullException exception)
+                {
+                    error = exception.Message;
+                }
+
+                Assert.IsNotNull(error);
+                Assert.IsTrue(error.Contains(parameterName));
+            }
+        }
+
+        /// <summary>
+        /// Test transformation passing master XML as null
+        /// </summary>
+        [TestMethod]
+        public void Transformer_Transform_NullAction()
+        {
+            var manifestXml = this.LoadEmbeddedXml("DiffConfig.xml");
+            var transformer = new Transformer(manifestXml, false);
+            var parameterName = GetMethodParameterName(nameof(Transformer.Transform), 1);
+
+            foreach (var parallel in GetAllBooleans())
+            {
+                string error = null;
+                var masterXml = this.LoadEmbeddedXml("MasterConfig.xml");
+                try
+                {
+                    transformer.Transform(masterXml, null, parallel);
+                }
+                catch (ArgumentNullException exception)
+                {
+                    error = exception.Message;
+                }
+
+                Assert.IsNotNull(error);
+                Assert.IsTrue(error.Contains(parameterName));
+            }
+        }
+
+        /// <summary>
         /// Get method parameter name
         /// </summary>
         /// <param name="methodName">method name, if null, return constructor</param>
@@ -112,7 +172,10 @@ namespace ConfigurationTransformation.UnitTest
                         outputName = outputName.Replace(key, pair.Value);
                     }
 
-                    outputs.Add(outputName, newXml);
+                    lock(outputs)
+                    {
+                        outputs.Add(outputName, newXml);
+                    }
                 },
                 parallel);
 
