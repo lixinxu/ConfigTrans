@@ -122,7 +122,7 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void TransformationCommand_AddAttribute_UsePath()
         {
-            TestAdd_UsePath(this.TestAddAttribute);
+            this.Test_UsePath(this.TestAddAttribute);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace ConfigurationTransformation.UnitTest
         [TestMethod]
         public void TransformationCommand_AddElement_UsePath()
         {
-            this.TestAdd_UsePath(this.TestAddElement);
+            this.Test_UsePath(this.TestAddElement);
         }
 
         /// <summary>
@@ -172,6 +172,64 @@ namespace ConfigurationTransformation.UnitTest
             this.TestAdd_UseAliasWithParameter(this.TestAddElement);
         }
         #endregion add element
+
+        #region update attribute
+        /// <summary>
+        /// Test updating attribute using XPath in XML directly
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_UpdateAttribute_UsePath()
+        {
+            this.Test_UsePath(this.TestUpdateAttribute, true);
+        }
+
+        /// <summary>
+        /// Test updating attribute by using XPath alias but no parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_UpdateAttribute_UseAliasWithoutParameter()
+        {
+            this.TestAdd_UseAliasWithoutParameter(this.TestUpdateAttribute, true);
+        }
+
+        /// <summary>
+        /// Test updating attribute by using XPath alias with parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_UpdateAttribute_UseAliasWithParameter()
+        {
+            this.TestAdd_UseAliasWithParameter(this.TestUpdateAttribute, true);
+        }
+        #endregion update attribute
+
+        #region update element
+        /// <summary>
+        /// Test updating element using XPath in XML directly
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_UpdateElement_UsePath()
+        {
+            this.Test_UsePath(this.TestUpdateElement);
+        }
+
+        /// <summary>
+        /// Test updating element by using XPath alias but no parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_UpdateElement_UseAliasWithoutParameter()
+        {
+            this.TestAdd_UseAliasWithoutParameter(this.TestUpdateElement);
+        }
+
+        /// <summary>
+        /// Test updating element by using XPath alias with parameter
+        /// </summary>
+        [TestMethod]
+        public void TransformationCommand_UpdateElement_UseAliasWithParameter()
+        {
+            this.TestAdd_UseAliasWithParameter(this.TestUpdateElement);
+        }
+        #endregion update element
 
         #region helper
         /// <summary>
@@ -201,6 +259,7 @@ namespace ConfigurationTransformation.UnitTest
             return LoadXml(fullName, "TransformationCommandTestData.", this.GetType());
         }
 
+        #region add utility
         /// <summary>
         /// Test transformation adding attribute
         /// </summary>
@@ -235,12 +294,38 @@ namespace ConfigurationTransformation.UnitTest
         private void TestAddElement(XPathCollection pathCollection, string path, string parameter, XmlNames names)
         {
             const string XmlFileBaseName = "AddElement";
-            const string newElement = "<locator type=\"database\"><connection>connection string</connection></locator>";
+            const string NewElementXml = "<locator type=\"database\"><connection>connection string</connection></locator><credential><user>user name</user><password>encrypted password</password></credential>";
             foreach (var valueInAttribute in GetAllBooleans())
             {
                 var configurationXml = this.LoadEmbeddedXml(XmlFileBaseName, 1);
 
-                var commandXml = CreateCommandXml(names.TransformAddElement, path, parameter, null, newElement, valueInAttribute, names);
+                var commandXml = CreateCommandXml(names.TransformAddElement, path, parameter, null, NewElementXml, valueInAttribute, names);
+                var command = new TransformationCommand(commandXml, names, pathCollection);
+
+                command.Transform(configurationXml);
+
+                var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
+                Assert.IsTrue(XmlAreSame(expected, configurationXml));
+            }
+        }
+        #endregion add utility
+
+        #region update utility
+        /// <summary>
+        /// Test transformation updating attribute
+        /// </summary>
+        /// <param name="pathCollection">XPath collection</param>
+        /// <param name="path">XPath string</param>
+        /// <param name="parameter">path parameter</param>
+        /// <param name="names">XML names</param>
+        private void TestUpdateAttribute(XPathCollection pathCollection, string path, string parameter, XmlNames names)
+        {
+            const string XmlFileBaseName = "UpdateAttribute";
+            foreach (var valueInAttribute in GetAllBooleans())
+            {
+                var configurationXml = this.LoadEmbeddedXml(XmlFileBaseName, 1);
+
+                var commandXml = CreateCommandXml(names.TransformUpdateElement, path, parameter, null, "NewValue", valueInAttribute, names);
                 var command = new TransformationCommand(commandXml, names, pathCollection);
 
                 command.Transform(configurationXml);
@@ -251,16 +336,48 @@ namespace ConfigurationTransformation.UnitTest
         }
 
         /// <summary>
+        /// Test transformation updating element
+        /// </summary>
+        /// <param name="pathCollection">XPath collection</param>
+        /// <param name="path">XPath string</param>
+        /// <param name="parameter">path parameter</param>
+        /// <param name="names">XML names</param>
+        private void TestUpdateElement(XPathCollection pathCollection, string path, string parameter, XmlNames names)
+        {
+            const string XmlFileBaseName = "UpdateElement";
+            const string NewElementXml = "<add key=\"item5\" value=\"value5\"><locator type=\"database\"><connection>connection string</connection></locator><credential><user>user name</user><password>encrypted password</password></credential></add>";
+
+            foreach (var valueInAttribute in GetAllBooleans())
+            {
+                var configurationXml = this.LoadEmbeddedXml(XmlFileBaseName, 1);
+
+                var commandXml = CreateCommandXml(names.TransformUpdateElement, path, parameter, null, NewElementXml, valueInAttribute, names);
+                var command = new TransformationCommand(commandXml, names, pathCollection);
+
+                command.Transform(configurationXml);
+
+                var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
+                Assert.IsTrue(XmlAreSame(expected, configurationXml));
+            }
+        }
+        #endregion update utility
+
+        /// <summary>
         /// Test add attribute/element use XPath directly
         /// </summary>
         /// <param name="tester">delegate to test adding attribute or element</param>
-        private void TestAdd_UsePath(Action<XPathCollection, string, string, XmlNames> tester)
+        /// <param name="addValueAttrInPath">add "value" attribute in XPath</param>
+        private void Test_UsePath(Action<XPathCollection, string, string, XmlNames> tester, bool addValueAttrInPath = false)
         {
             var names = GetXmlNames();
 
             var key = "item3";
             var path = $"//{ConfigRootXmlElementName}/{ConfigAppSettingsElementName}/{ConfigAddItemElementName}[@{ConfigKeyAttributeName}='{key}']"
                 .ToString(CultureInfo.InvariantCulture);
+            if (addValueAttrInPath)
+            {
+                path += "/@value";
+            }
 
             var pathCollection = new XPathCollection(null, names);
 
@@ -271,7 +388,8 @@ namespace ConfigurationTransformation.UnitTest
         /// Test adding attribute/element use XPath alias without parameter
         /// </summary>
         /// <param name="tester">delegate to test adding attribute or element</param>
-        private void TestAdd_UseAliasWithoutParameter(Action<XPathCollection, string, string, XmlNames> tester)
+        /// <param name="addValueAttrInPath">add "value" attribute in XPath</param>
+        private void TestAdd_UseAliasWithoutParameter(Action<XPathCollection, string, string, XmlNames> tester, bool addValueAttrInPath = false)
         {
             var names = GetXmlNames();
             var indicator = GetDefaultXPathAliasIndicator();
@@ -280,6 +398,11 @@ namespace ConfigurationTransformation.UnitTest
             var alias = key + "Path";
             var path = $"//{ConfigRootXmlElementName}/{ConfigAppSettingsElementName}/{ConfigAddItemElementName}[@{ConfigKeyAttributeName}='{key}']"
                 .ToString(CultureInfo.InvariantCulture);
+            if (addValueAttrInPath)
+            {
+                path += "/@value";
+            }
+
             var pathCollectionXml = CreatePathCollectionXml(
                 null,
                 null,
@@ -297,7 +420,8 @@ namespace ConfigurationTransformation.UnitTest
         /// Test adding new attribute/element by using XPath alias with parameter
         /// </summary>
         /// <param name="tester">delegate to test adding attribute or element</param>
-        private void TestAdd_UseAliasWithParameter(Action<XPathCollection, string, string, XmlNames> tester)
+        /// <param name="addValueAttrInPath">add "value" attribute in XPath</param>
+        private void TestAdd_UseAliasWithParameter(Action<XPathCollection, string, string, XmlNames> tester, bool addValueAttrInPath = false)
         {
             var names = GetXmlNames();
             var indicator = GetDefaultXPathAliasIndicator();
@@ -307,6 +431,11 @@ namespace ConfigurationTransformation.UnitTest
             var alias = key + "Path";
             var path = $"//{ConfigRootXmlElementName}/{ConfigAppSettingsElementName}/{ConfigAddItemElementName}[@{ConfigKeyAttributeName}='{placeholder}']"
                 .ToString(CultureInfo.InvariantCulture);
+            if (addValueAttrInPath)
+            {
+                path += "/@value";
+            }
+
             var pathCollectionXml = CreatePathCollectionXml(
                 null,
                 null,

@@ -176,17 +176,56 @@ namespace ConfigurationTransformation
                     if (node.NodeType == XmlNodeType.Element)
                     {
                         var builder = new StringBuilder();
-                        var newXml = builder.Append("<root>").Append(value).Append("</root>").ToString();
-                        var newDoc = new XmlDocument();
-                        newDoc.LoadXml(builder.ToString());
+                        var referenceXml = builder.Append("<root>").Append(value).Append("</root>").ToString();
+                        var referenceDoc = new XmlDocument();
+                        referenceDoc.LoadXml(builder.ToString());
 
                         var parent = node.ParentNode;
-                        var newRoot = newDoc.DocumentElement;
-                        var newChildren = newRoot.ChildNodes;
-                        for (var i = newChildren.Count - 1; i >= 0; i--)
+                        var referenceRoot = referenceDoc.DocumentElement;
+                        var referenceChildren = referenceRoot.ChildNodes;
+                        for (var i = 0; i < referenceChildren.Count; i++)
                         {
-                            var newChild = newChildren[i].CloneNode(true);
-                            parent.InsertAfter(newChild, node);
+                            var referenceChild = referenceChildren[i];
+                            XmlNode newNode;
+                            switch (referenceChild.NodeType)
+                            {
+                                case XmlNodeType.Text:
+                                    newNode = node.OwnerDocument.CreateTextNode(referenceChild.InnerText);
+                                    break;
+                                case XmlNodeType.CDATA:
+                                    newNode = node.OwnerDocument.CreateCDataSection(referenceChild.InnerText);
+                                    break;
+                                case XmlNodeType.Element:
+                                    {
+                                        var referenceElement = referenceChild as XmlElement;
+                                        var newElement = node.OwnerDocument.CreateElement(referenceElement.Name);
+                                        newNode = newElement;
+                                        if (referenceElement.HasAttributes)
+                                        {
+                                            foreach (XmlAttribute referenceAttribute in referenceElement.Attributes)
+                                            {
+                                                var newAttribute = node.OwnerDocument.CreateAttribute(referenceAttribute.Name);
+                                                newAttribute.Value = referenceAttribute.Value;
+                                                newElement.Attributes.Append(newAttribute);
+                                            }
+                                        }
+
+                                        if (referenceElement.HasChildNodes)
+                                        {
+                                            newElement.InnerXml = referenceElement.InnerXml;
+                                        }
+                                    }
+
+                                    break;
+                                default:
+                                    newNode = null;
+                                    break;
+                            }
+
+                            if (newNode != null)
+                            {
+                                parent.InsertAfter(newNode, node);
+                            }
                         }
 
                         parent.RemoveChild(node);
