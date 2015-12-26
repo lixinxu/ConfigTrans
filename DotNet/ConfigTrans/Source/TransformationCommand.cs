@@ -119,13 +119,13 @@ namespace ConfigurationTransformation
                         throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
                     }
 
+                    var element = node as XmlElement;
                     if (string.IsNullOrEmpty(name))
                     {
-                        xml.InnerXml += value;
+                        element.InnerXml += value;
                     }
                     else
                     {
-                        var element = node as XmlElement;
                         var attribute = xml.OwnerDocument.CreateAttribute(name);
                         attribute.Value = value;
                         element.Attributes.Append(attribute);

@@ -108,6 +108,12 @@
   <ItemGroup>
     <EmbeddedResource Include="TransformationCommandTestData\AddAttribute2.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TransformationCommandTestData\AddElement1.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TransformationCommandTestData\AddElement2.xml" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
