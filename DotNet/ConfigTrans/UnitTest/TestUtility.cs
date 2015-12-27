@@ -10,6 +10,7 @@ namespace ConfigurationTransformation.UnitTest
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Reflection;
     using System.Xml;
 
@@ -190,6 +191,15 @@ namespace ConfigurationTransformation.UnitTest
         public static string GetDefaultXPathParameterPlaceholder()
         {
             return XPathCollectionForUtility.GetDefaultParameterPlaceholder();
+        }
+
+        /// <summary>
+        /// Get temp folder path
+        /// </summary>
+        /// <returns>temp folder path</returns>
+        public static string GetTempFolder()
+        {
+            return Path.Combine(Path.GetTempPath(), "FileTransformation_" + Guid.NewGuid().ToString("N"));
         }
 
         /// <summary>

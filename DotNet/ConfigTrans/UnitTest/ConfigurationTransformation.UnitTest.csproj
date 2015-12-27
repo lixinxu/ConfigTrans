@@ -58,6 +58,7 @@
     <Compile Include="ConfigurationXmlUtility.cs" />
     <Compile Include="FileTransformerUnitTest.cs" />
     <Compile Include="ManifestXmlUtility.cs" />
+    <Compile Include="ProgramUnitTest.cs" />
     <Compile Include="TestUtility.cs" />
     <Compile Include="TransformationCommandUnitTest.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>

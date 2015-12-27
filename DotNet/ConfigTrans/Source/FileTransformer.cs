@@ -24,11 +24,13 @@ namespace ConfigurationTransformation
         /// <param name="masterXmlFilePath">master XML file path</param>
         /// <param name="manifestXmlFilePath">manifest XML file path</param>
         /// <param name="outputDirectly">output directly</param>
+        /// <param name="informationWriter">information writer</param>
         /// <param name="parallel">parallel process</param>
         public static void Transform(
             string masterXmlFilePath, 
             string manifestXmlFilePath, 
             string outputDirectly, 
+            TextWriter informationWriter,
             bool parallel)
         {
             if (string.IsNullOrEmpty(masterXmlFilePath))
@@ -109,6 +111,12 @@ namespace ConfigurationTransformation
 
                     if (writeFile)
                     {
+                        if (informationWriter != null)
+                        {
+                            var message = $"Write: {path}".ToString(CultureInfo.InvariantCulture);
+                            informationWriter.WriteLine(message);
+                        }
+
                         var settings = new XmlWriterSettings()
                         {
                             Indent = true,
@@ -117,6 +125,14 @@ namespace ConfigurationTransformation
                         using (var writer = XmlTextWriter.Create(path, settings))
                         {
                             newXml.WriteTo(writer);
+                        }
+                    }
+                    else
+                    {
+                        if (informationWriter != null)
+                        {
+                            var message = $"Skip: {path}".ToString(CultureInfo.InvariantCulture);
+                            informationWriter.WriteLine(message);
                         }
                     }
                 },
