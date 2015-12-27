@@ -67,10 +67,7 @@ namespace ConfigurationTransformation
 
             var parallel = GetParallelFlag(args.Length > 3 ? args[3] : null, ConfigurationManager.AppSettings);
 
-            using (var inforWriter = new StringWriter())
-            {
-                FileTransformer.Transform(masterFile, manifestFile, outputFolder, inforWriter, parallel);
-            }
+            FileTransformer.Transform(masterFile, manifestFile, outputFolder, writer, parallel);
 
             return 0;
         }

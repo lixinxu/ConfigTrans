@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="MyCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="MyWebRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="item1" value="value1" />
+      <Setting name="item2" value="value2" />
+      <Setting name="item3" value="value3" />
+      <Setting name="item4" value="value4" />
+      <Setting name="item5" value="value5" />
+      <Setting name="item6" value="value6" />
+      <Setting name="item7" value="value7" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="SharedCertificate" thumbprint="0000" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+  <Role name="MyWorkerRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="item1" value="value1" />
+      <Setting name="item2" value="value2" />
+      <Setting name="item3" value="value3" />
+      <Setting name="item4" value="value4" />
+      <Setting name="item5" value="value5" />
+      <Setting name="item6" value="value6" />
+      <Setting name="item7" value="value7" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="SharedCertificate" thumbprint="0000" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>

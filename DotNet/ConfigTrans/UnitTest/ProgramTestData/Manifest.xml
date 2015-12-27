@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<transfor fileFormat="web.{env}-{region}.config" parameterPlacehold="{parameter}">
+  <path>
+    <add name="SharedCertificateThumbprint" path="//ServiceConfiguration/Role/Certificates/Certificate[@name='SharedCertificate']/@thumbprint" />
+    <add name="SharedSettingItem" path="//ServiceConfiguration/Role/ConfigurationSettings/Setting[@name='{parameter}']" />
+    <add name="SharedSettingAttr" path="//ServiceConfiguration/Role/ConfigurationSettings/Setting[@name='{parameter}']/@value" />
+    <add name="WebSettingAttr" path="//ServiceConfiguration/Role[@name='MyWebRole']/ConfigurationSettings/Setting[@name='{parameter}']/@value" />
+    <add name="WorkerSettingAttr" path="//ServiceConfiguration/Role[@name='MyWorkerRole']/ConfigurationSettings/Setting[@name='{parameter}']/@value" />
+  </path>
+  <sections name="env">
+    <transform>
+      <update path="#SharedSettingAttr" param="item1" value="item1-global" />
+    </transform>
+
+    <section name="dev">
+      <transform>
+        <update path="#SharedCertificateThumbprint" value="dev certificate" />
+        <update path="#SharedSettingAttr" param="item2" value="item2-dev" />
+        <update path="#WebSettingAttr" param="item3" value="item3-web-dev" />
+        <update path="#WorkerSettingAttr" param="item3" value="item3-worker-dev" />
+      </transform>
+
+      <sections name="region">
+        <transform>
+          <update path="#SharedSettingAttr" param="item4" value="item3-dev-region" />
+          <update path="#WebSettingAttr" param="item5" value="item5-web-dev-region" />
+          <update path="#WorkerSettingAttr" param="item5" value="item5-worker-dev-region" />
+        </transform>
+        <section name="westus">
+          <transform>
+            <update path="#SharedSettingAttr" param="item6" value="item6-dev-westus" />
+            <update path="#WebSettingAttr" param="item7" value="item7-web-dev-westus" />
+            <update path="#WorkerSettingAttr" param="item7" value="item7-worker-dev-westus" />
+          </transform>
+        </section>
+        <section name="eastus">
+          <transform>
+            <update path="#SharedSettingAttr" param="item6" value="item6-dev-eastus" />
+            <update path="#WebSettingAttr" param="item7" value="item7-web-dev-eastus" />
+            <update path="#WorkerSettingAttr" param="item7" value="item7-worker-dev-eastus" />
+          </transform>
+        </section>
+      </sections>
+    </section>
+
+    <!--
+    <section name="prod">
+      <transform>
+        <update path="#AppSettingAttr" param="item2" value="item2-prod" />
+      </transform>
+
+      <sections name="region">
+        <transform>
+          <update path="#AppSettingAttr" param="item3" value="item3-prod-region" />
+        </transform>
+        <section name="westus">
+          <transform>
+            <update path="#AppSettingAttr" param="item4" value="item4-prod-westus" />
+          </transform>
+        </section>
+        <section name="eastus">
+          <transform>
+            <update path="#AppSettingAttr" param="item4" value="item4-prod-eastus" />
+          </transform>
+        </section>
+      </sections>
+    </section>
+
+    <section name="uat">
+      <transform>
+        <remove path="#AppSettingAttr" param="item2" />
+      </transform>
+
+      <sections name="region">
+        <section name="westus">
+          <transform>
+            <add path="#AppSettingItem" param="item4" name="lockItem" value="true" />
+          </transform>
+        </section>
+        <section name="eastus">
+          <transform>
+            <add path="#AppSettingRoot"><![CDATA[<add key="item5" value="value5" />]]></add>
+            <remove path="#AppSettingItem" param="item3" />
+          </transform>
+        </section>
+      </sections>
+    </section>
+    -->
+  </sections>
+</transfor>

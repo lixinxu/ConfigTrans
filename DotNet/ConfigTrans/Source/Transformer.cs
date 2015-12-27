@@ -258,7 +258,8 @@ namespace ConfigurationTransformation
             Action<string, IReadOnlyDictionary<string, string>, XmlElement> saveTransformedXml)
         {
             var newXml = CopyXml(xml);
-            var scopes = transformer.Transform(newXml);
+            var namespaceManager = new XmlNamespaceManager(newXml.OwnerDocument.NameTable);
+            var scopes = transformer.Transform(newXml, namespaceManager);
             saveTransformedXml(this.outputFormat, scopes, newXml);
         }
     }

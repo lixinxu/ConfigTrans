@@ -335,7 +335,8 @@ namespace ConfigurationTransformation.UnitTest
                 var commandXml = CreateCommandXml(names.TransformAddElement, path, parameter, "lockAttributes", "true", valueInAttribute, names);
                 var command = new TransformationCommand(commandXml, names, pathCollection);
 
-                command.Transform(configurationXml);
+                var namespaceManager = new XmlNamespaceManager(configurationXml.OwnerDocument.NameTable);
+                command.Transform(configurationXml, namespaceManager);
 
                 var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
                 Assert.IsTrue(XmlAreSame(expected, configurationXml));
@@ -360,7 +361,8 @@ namespace ConfigurationTransformation.UnitTest
                 var commandXml = CreateCommandXml(names.TransformAddElement, path, parameter, null, NewElementXml, valueInAttribute, names);
                 var command = new TransformationCommand(commandXml, names, pathCollection);
 
-                command.Transform(configurationXml);
+                var namespaceManager = new XmlNamespaceManager(configurationXml.OwnerDocument.NameTable);
+                command.Transform(configurationXml, namespaceManager);
 
                 var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
                 Assert.IsTrue(XmlAreSame(expected, configurationXml));
@@ -386,7 +388,8 @@ namespace ConfigurationTransformation.UnitTest
                 var commandXml = CreateCommandXml(names.TransformUpdateElement, path, parameter, null, "NewValue", valueInAttribute, names);
                 var command = new TransformationCommand(commandXml, names, pathCollection);
 
-                command.Transform(configurationXml);
+                var namespaceManager = new XmlNamespaceManager(configurationXml.OwnerDocument.NameTable);
+                command.Transform(configurationXml, namespaceManager);
 
                 var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
                 Assert.IsTrue(XmlAreSame(expected, configurationXml));
@@ -412,7 +415,8 @@ namespace ConfigurationTransformation.UnitTest
                 var commandXml = CreateCommandXml(names.TransformUpdateElement, path, parameter, null, NewElementXml, valueInAttribute, names);
                 var command = new TransformationCommand(commandXml, names, pathCollection);
 
-                command.Transform(configurationXml);
+                var namespaceManager = new XmlNamespaceManager(configurationXml.OwnerDocument.NameTable);
+                command.Transform(configurationXml, namespaceManager);
 
                 var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
                 Assert.IsTrue(XmlAreSame(expected, configurationXml));
@@ -436,7 +440,8 @@ namespace ConfigurationTransformation.UnitTest
             var commandXml = CreateCommandXml(names.TransformRemoveElement, path, parameter, null, null, true, names);
             var command = new TransformationCommand(commandXml, names, pathCollection);
 
-            command.Transform(configurationXml);
+            var namespaceManager = new XmlNamespaceManager(configurationXml.OwnerDocument.NameTable);
+            command.Transform(configurationXml, namespaceManager);
 
             var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
             Assert.IsTrue(XmlAreSame(expected, configurationXml));
@@ -458,7 +463,8 @@ namespace ConfigurationTransformation.UnitTest
             var commandXml = CreateCommandXml(names.TransformRemoveElement, path, parameter, null, null, true, names);
             var command = new TransformationCommand(commandXml, names, pathCollection);
 
-            command.Transform(configurationXml);
+            var namespaceManager = new XmlNamespaceManager(configurationXml.OwnerDocument.NameTable);
+            command.Transform(configurationXml, namespaceManager);
 
             var expected = this.LoadEmbeddedXml(XmlFileBaseName, 2);
             Assert.IsTrue(XmlAreSame(expected, configurationXml));

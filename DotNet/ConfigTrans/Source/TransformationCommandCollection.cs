@@ -117,17 +117,18 @@ namespace ConfigurationTransformation
         /// Transform XML
         /// </summary>
         /// <param name="xml">XML to transform</param>
+        /// <param name="namespaceManager">XML namespace manager</param>
         /// <returns>scope collection</returns>
-        public IReadOnlyDictionary<string, string> Transform(XmlElement xml)
+        public IReadOnlyDictionary<string, string> Transform(XmlElement xml, XmlNamespaceManager namespaceManager)
         {
             if (this.Host != null)
             {
-                this.Host.Transform(xml);
+                this.Host.Transform(xml, namespaceManager);
             }
 
             foreach (var commnand in this.Commands)
             {
-                commnand.Transform(xml);
+                commnand.Transform(xml, namespaceManager);
             }
 
             return this.Scopes;

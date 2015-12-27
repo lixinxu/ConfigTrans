@@ -20,7 +20,7 @@ namespace ConfigurationTransformation
         /// <summary>
         /// transformation command type
         /// </summary>
-        private Action<XmlElement> transformationAction;
+        private Action<XmlElement, XmlNamespaceManager> transformationAction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformationCommand" /> class.
@@ -73,15 +73,15 @@ namespace ConfigurationTransformation
 
             if (commandXml.Name == names.TransformAddElement)
             {
-                this.transformationAction = xml => this.Add(xml, path, name, value);
+                this.transformationAction = (xml, nsmgr) => this.Add(xml, nsmgr, path, name, value);
             }
             else if (commandXml.Name == names.TransformRemoveElement)
             {
-                this.transformationAction = xml => this.Remove(xml, path);
+                this.transformationAction = (xml, nsmgr) => this.Remove(xml, nsmgr, path);
             }
             else if (commandXml.Name == names.TransformUpdateElement)
             {
-                this.transformationAction = xml => this.Update(xml, path, value);
+                this.transformationAction = (xml, nsmgr) => this.Update(xml, nsmgr, path, value);
             }
             else
             {
@@ -94,21 +94,23 @@ namespace ConfigurationTransformation
         /// Transform XML
         /// </summary>
         /// <param name="xml">XML to transform</param>
-        public void Transform(XmlElement xml)
+        /// <param name="namespaceManager">XML namespace manager</param>
+        public void Transform(XmlElement xml, XmlNamespaceManager namespaceManager)
         {
-            this.transformationAction(xml);
+            this.transformationAction(xml, namespaceManager);
         }
 
         /// <summary>
         /// Add attribute or element
         /// </summary>
         /// <param name="xml">root XML</param>
+        /// <param name="namespaceManager">XML namespace manager</param>
         /// <param name="path">XPath value</param>
         /// <param name="name">name for attribute</param>
         /// <param name="value">value for attribute or element</param>
-        private void Add(XmlElement xml, string path, string name, string value)
+        private void Add(XmlElement xml, XmlNamespaceManager namespaceManager, string path, string name, string value)
         {
-            var nodes = xml.SelectNodes(path);
+            var nodes = xml.SelectNodes(path, namespaceManager);
             if (nodes != null)
             {
                 foreach (XmlNode node in nodes)
@@ -138,10 +140,11 @@ namespace ConfigurationTransformation
         /// Remove attribute or element
         /// </summary>
         /// <param name="xml">root XML</param>
+        /// <param name="namespaceManager">XML namespace manager</param>
         /// <param name="path">XPath to find the node to remove</param>
-        private void Remove(XmlElement xml, string path)
+        private void Remove(XmlElement xml, XmlNamespaceManager namespaceManager, string path)
         {
-            var nodes = xml.SelectNodes(path);
+            var nodes = xml.SelectNodes(path, namespaceManager);
             if (nodes != null)
             {
                 foreach (XmlNode node in nodes)
@@ -164,11 +167,12 @@ namespace ConfigurationTransformation
         /// Update attribute or element
         /// </summary>
         /// <param name="xml">root XML</param>
+        /// <param name="namespaceManager">XML namespace manager</param>
         /// <param name="path">XPath to find the root</param>
         /// <param name="value">value to replace</param>
-        private void Update(XmlElement xml, string path, string value)
+        private void Update(XmlElement xml, XmlNamespaceManager namespaceManager, string path, string value)
         {
-            var nodes = xml.SelectNodes(path);
+            var nodes = xml.SelectNodes(path, namespaceManager);
             if (nodes != null)
             {
                 foreach (XmlNode node in nodes)

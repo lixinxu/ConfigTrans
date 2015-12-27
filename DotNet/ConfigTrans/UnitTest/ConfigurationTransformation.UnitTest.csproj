@@ -90,6 +90,7 @@
     <EmbeddedResource Include="FileTransformerTestData\web.prod-westus.config" />
     <EmbeddedResource Include="FileTransformerTestData\web.uat-eastus.config" />
     <EmbeddedResource Include="FileTransformerTestData\web.uat-westus.config" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TransformerTestData\DiffConfig.xml" />
@@ -142,6 +143,10 @@
   <ItemGroup>
     <EmbeddedResource Include="FileTransformerTestData\DiffConfig.xml" />
     <EmbeddedResource Include="FileTransformerTestData\MasterConfig.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="ProgramTestData\Manifest.xml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
