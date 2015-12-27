@@ -41,6 +41,9 @@ namespace ConfigurationTransformation
 
             var collection = new Dictionary<string, XPathInformation>();
             this.PathCollection = collection;
+            var namespaces = new Dictionary<string, string>();
+            this.NamespaceCollection = namespaces;
+
             if (pathRootElement == null)
             {
                 this.AliasIndicator = null;
@@ -56,6 +59,41 @@ namespace ConfigurationTransformation
                     pathRootElement,
                     names.PathParameterPlaceholderAttribute,
                     DefaultParameterPlaceholder);
+
+                foreach (XmlElement namespaceElement in pathRootElement.SelectNodes(names.PathNamespaceElementName))
+                {
+                    if (namespaceElement != null)
+                    {
+                        var prefix = GetAttribute(namespaceElement, names.PathNamespacePrefixAttributeName);
+                        if (string.IsNullOrEmpty(prefix))
+                        {
+                            var message = $"Attribute '{names.PathNamespacePrefixAttributeName}' is required for namespace. XML:{namespaceElement.OuterXml}";
+                            throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
+                        }
+
+                        var value = namespaceElement.InnerText;
+                        if (value != null)
+                        {
+                            value = value.Trim();
+                        }
+
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            var message = $"namespace value is required and it should not be empty. XML:{namespaceElement.OuterXml}";
+                            throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
+                        }
+
+                        string oldNamespace;
+                        if (namespaces.TryGetValue(prefix, out oldNamespace))
+                        {
+                            var message = $"prefix '{prefix}' has been used for namespace '{oldNamespace}'. XML:{namespaceElement.OuterXml}";
+                            throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
+                        }
+
+                        namespaces.Add(prefix, value);
+                    }
+                }
+
                 foreach (XmlElement pathElement in pathRootElement.SelectNodes(names.PathAddElementName))
                 {
                     if (pathElement != null)
@@ -63,12 +101,8 @@ namespace ConfigurationTransformation
                         var pathInformation = new XPathInformation(pathElement, names, this.ParameterPlaceholder);
                         if (collection.ContainsKey(pathInformation.Name))
                         {
-                            var message = string.Format(
-                                CultureInfo.InvariantCulture,
-                                "The alias \"{0}\" has been used. XML:{1}",
-                                pathInformation.Name,
-                                pathElement.OuterXml);
-                            throw new ArgumentException(message);
+                            var message = $"The alias '{pathInformation.Name}' has been used. XML:{pathElement.OuterXml}";
+                            throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
                         }
 
                         collection.Add(pathInformation.Name, pathInformation);
@@ -91,6 +125,11 @@ namespace ConfigurationTransformation
         /// Gets path collection
         /// </summary>
         protected IReadOnlyDictionary<string, XPathInformation> PathCollection { get; private set; }
+
+        /// <summary>
+        /// Gets namespace collection
+        /// </summary>
+        protected IReadOnlyDictionary<string, string> NamespaceCollection { get; private set; }
 
         /// <summary>
         /// Get XPath
@@ -118,11 +157,8 @@ namespace ConfigurationTransformation
                 XPathInformation pathInformation;
                 if (!this.PathCollection.TryGetValue(alias, out pathInformation))
                 {
-                    var message = string.Format(
-                        CultureInfo.InvariantCulture,
-                        "\"{0}\" is path alias. However it was not defined in path collection",
-                        path);
-                    throw new ArgumentException(message);
+                    var message = $"'{path}' is path alias. However it was not defined in path collection";
+                    throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
                 }
 
                 finalPath = pathInformation.Path;
@@ -135,15 +171,27 @@ namespace ConfigurationTransformation
             }
             else if (!string.IsNullOrEmpty(parameter))
             {
-                var message = string.Format(
-                    CultureInfo.InvariantCulture,
-                    "XPath does not accept parameter but parameter is provided. Parameter:\"{0}\". XPath:{1}",
-                    parameter,
-                    path);
-                throw new ArgumentException(message);
+                var message = $"XPath does not accept parameter but parameter is provided. Parameter:'{parameter}'. XPath:{path}";
+                throw new ArgumentException(message.ToString(CultureInfo.InvariantCulture));
             }
 
             return finalPath;
+        }
+
+        /// <summary>
+        /// Create namespace manager
+        /// </summary>
+        /// <param name="xml">XML to provider the base namespace</param>
+        /// <returns>XML namespace manager</returns>
+        public XmlNamespaceManager CreateNamespaceManager(XmlElement xml)
+        {
+            var namespaceManager = new XmlNamespaceManager(xml.OwnerDocument.NameTable);
+            foreach (var pair in this.NamespaceCollection)
+            {
+                namespaceManager.AddNamespace(pair.Key, pair.Value);
+            }
+
+            return namespaceManager;
         }
     }
 }

@@ -217,6 +217,31 @@ namespace ConfigurationTransformation
         /// </summary>
         [ConfigurationItem("add")]
         public string PathAddElementName { get; private set; }
+
+        /// <summary>
+        /// Gets namespace element name
+        /// </summary>
+        /// <example>
+        /// <![CDATA[
+        /// <transfor fileFormat="web.{env}-{region}.config" parameterPlacehold="{parameter}">
+        ///   <path>
+        ///     <namespace prefix="x">http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration</namespace>
+        ///     <namespace prefix="y">http://schemas.microsoft.com/ServiceHosting/2008/11/ServiceConfiguration</namespace>
+        ///     <add name = "SharedCertificateThumbprint" path="..." />
+        ///     ...
+        ///   </path>
+        ///   ...
+        /// </transfor>
+        /// ]]>
+        /// </example>
+        [ConfigurationItem("namespace")]
+        public string PathNamespaceElementName { get; private set; }
+
+        /// <summary>
+        /// Gets namespace prefix attribute name
+        /// </summary>
+        [ConfigurationItem("prefix")]
+        public string PathNamespacePrefixAttributeName { get; private set; }
         #endregion Predefined XPath collection
 
         #region Transformation command

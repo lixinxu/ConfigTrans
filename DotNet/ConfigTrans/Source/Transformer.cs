@@ -29,6 +29,11 @@ namespace ConfigurationTransformation
         private readonly IReadOnlyList<TransformationCommandCollection> transformations;
 
         /// <summary>
+        /// XPath collection
+        /// </summary>
+        private XPathCollection xpathCollection;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Transformer" /> class.
         /// </summary>
         /// <param name="manifestXml">manifest XML instance</param>
@@ -46,6 +51,7 @@ namespace ConfigurationTransformation
 
             var pathXml = manifestXml.SelectSingleNode(names.PathElementName) as XmlElement;
             var pathCollection = new XPathCollection(pathXml, names);
+            this.xpathCollection = pathCollection;
             var transformationCollection = new List<TransformationCommandCollection>();
 
             ProcessSections(null, manifestXml, pathCollection, transformationCollection, names, parallel);
@@ -73,20 +79,21 @@ namespace ConfigurationTransformation
                 throw new ArgumentNullException(nameof(saveTransformedXml));
             }
 
+            var namespaceManager = this.xpathCollection.CreateNamespaceManager(xml);
             if (parallel)
             {
                 Parallel.ForEach(
                     this.transformations,
                     transformer =>
                     {
-                        this.Transform(transformer, xml, saveTransformedXml);
+                        this.Transform(transformer, xml, namespaceManager, saveTransformedXml);
                     });
             }
             else
             {
                 foreach (var transformer in this.transformations)
                 {
-                    this.Transform(transformer, xml, saveTransformedXml);
+                    this.Transform(transformer, xml, namespaceManager, saveTransformedXml);
                 }
             }
         }
@@ -251,14 +258,15 @@ namespace ConfigurationTransformation
         /// </summary>
         /// <param name="transformer">transformer which will take action</param>
         /// <param name="xml">XML which will be transformed</param>
+        /// <param name="namespaceManager">XML namespace manager</param>
         /// <param name="saveTransformedXml">the action to save transformed XML</param>
         private void Transform(
             TransformationCommandCollection transformer,
             XmlElement xml,
+            XmlNamespaceManager namespaceManager,
             Action<string, IReadOnlyDictionary<string, string>, XmlElement> saveTransformedXml)
         {
             var newXml = CopyXml(xml);
-            var namespaceManager = new XmlNamespaceManager(newXml.OwnerDocument.NameTable);
             var scopes = transformer.Transform(newXml, namespaceManager);
             saveTransformedXml(this.outputFormat, scopes, newXml);
         }

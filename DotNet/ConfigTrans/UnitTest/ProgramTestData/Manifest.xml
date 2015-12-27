@@ -1,11 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<transfor fileFormat="web.{env}-{region}.config" parameterPlacehold="{parameter}">
+<transfor fileFormat="ServiceConfiguration.{env}-{region}.cscfg" parameterPlacehold="{parameter}">
   <path>
-    <add name="SharedCertificateThumbprint" path="//ServiceConfiguration/Role/Certificates/Certificate[@name='SharedCertificate']/@thumbprint" />
-    <add name="SharedSettingItem" path="//ServiceConfiguration/Role/ConfigurationSettings/Setting[@name='{parameter}']" />
-    <add name="SharedSettingAttr" path="//ServiceConfiguration/Role/ConfigurationSettings/Setting[@name='{parameter}']/@value" />
-    <add name="WebSettingAttr" path="//ServiceConfiguration/Role[@name='MyWebRole']/ConfigurationSettings/Setting[@name='{parameter}']/@value" />
-    <add name="WorkerSettingAttr" path="//ServiceConfiguration/Role[@name='MyWorkerRole']/ConfigurationSettings/Setting[@name='{parameter}']/@value" />
+    <namespace prefix="x">http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration</namespace>
+    <add name="SharedCertificateThumbprint" path="//x:ServiceConfiguration/x:Role/x:Certificates/x:Certificate[@name='SharedCertificate']/@thumbprint" />
+    <add name="SharedSettingItem" path="//x:ServiceConfiguration/x:Role/x:ConfigurationSettings/x:Setting[@name='{parameter}']" />
+    <add name="SharedSettingAttr" path="//x:ServiceConfiguration/x:Role/x:ConfigurationSettings/x:Setting[@name='{parameter}']/@value" />
+    <add name="WebSettingAttr" path="//x:ServiceConfiguration/x:Role[@name='MyWebRole']/x:ConfigurationSettings/x:Setting[@name='{parameter}']/@value" />
+    <add name="WorkerSettingAttr" path="//x:ServiceConfiguration/x:Role[@name='MyWorkerRole']/x:ConfigurationSettings/x:Setting[@name='{parameter}']/@value" />
   </path>
   <sections name="env">
     <transform>
@@ -22,7 +23,7 @@
 
       <sections name="region">
         <transform>
-          <update path="#SharedSettingAttr" param="item4" value="item3-dev-region" />
+          <update path="#SharedSettingAttr" param="item4" value="item4-dev-region" />
           <update path="#WebSettingAttr" param="item5" value="item5-web-dev-region" />
           <update path="#WorkerSettingAttr" param="item5" value="item5-worker-dev-region" />
         </transform>
@@ -43,24 +44,32 @@
       </sections>
     </section>
 
-    <!--
     <section name="prod">
       <transform>
-        <update path="#AppSettingAttr" param="item2" value="item2-prod" />
+        <update path="#SharedCertificateThumbprint" value="prod certificate" />
+        <update path="#SharedSettingAttr" param="item2" value="item2-prod" />
+        <update path="#WebSettingAttr" param="item3" value="item3-web-prod" />
+        <update path="#WorkerSettingAttr" param="item3" value="item3-worker-prod" />
       </transform>
 
       <sections name="region">
         <transform>
-          <update path="#AppSettingAttr" param="item3" value="item3-prod-region" />
+          <update path="#SharedSettingAttr" param="item4" value="item4-prod-region" />
+          <update path="#WebSettingAttr" param="item5" value="item5-web-prod-region" />
+          <update path="#WorkerSettingAttr" param="item5" value="item5-worker-prod-region" />
         </transform>
         <section name="westus">
           <transform>
-            <update path="#AppSettingAttr" param="item4" value="item4-prod-westus" />
+            <update path="#SharedSettingAttr" param="item6" value="item6-prod-westus" />
+            <update path="#WebSettingAttr" param="item7" value="item7-web-prod-westus" />
+            <update path="#WorkerSettingAttr" param="item7" value="item7-worker-prod-westus" />
           </transform>
         </section>
         <section name="eastus">
           <transform>
-            <update path="#AppSettingAttr" param="item4" value="item4-prod-eastus" />
+            <update path="#SharedSettingAttr" param="item6" value="item6-prod-eastus" />
+            <update path="#WebSettingAttr" param="item7" value="item7-web-prod-eastus" />
+            <update path="#WorkerSettingAttr" param="item7" value="item7-worker-prod-eastus" />
           </transform>
         </section>
       </sections>
@@ -68,23 +77,34 @@
 
     <section name="uat">
       <transform>
-        <remove path="#AppSettingAttr" param="item2" />
+        <update path="#SharedCertificateThumbprint" value="uat certificate" />
+        <update path="#SharedSettingAttr" param="item2" value="item2-uat" />
+        <update path="#WebSettingAttr" param="item3" value="item3-web-uat" />
+        <update path="#WorkerSettingAttr" param="item3" value="item3-worker-uat" />
       </transform>
 
       <sections name="region">
-        <section name="westus">
+        <transform>
+          <update path="#SharedSettingAttr" param="item4" value="item4-uat-region" />
+          <update path="#WebSettingAttr" param="item5" value="item5-web-uat-region" />
+          <update path="#WorkerSettingAttr" param="item5" value="item5-worker-uat-region" />
+        </transform>
+        <section name="japan">
           <transform>
-            <add path="#AppSettingItem" param="item4" name="lockItem" value="true" />
+            <update path="#SharedSettingAttr" param="item6" value="item6-uat-japan" />
+            <update path="#WebSettingAttr" param="item7" value="item7-web-uat-japan" />
+            <update path="#WorkerSettingAttr" param="item7" value="item7-worker-uat-japan" />
           </transform>
         </section>
-        <section name="eastus">
+        <section name="china">
           <transform>
-            <add path="#AppSettingRoot"><![CDATA[<add key="item5" value="value5" />]]></add>
-            <remove path="#AppSettingItem" param="item3" />
+            <update path="#SharedSettingAttr" param="item6" value="item6-uat-china" />
+            <update path="#WebSettingAttr" param="item7" value="item7-web-uat-china" />
+            <update path="#WorkerSettingAttr" param="item7" value="item7-worker-uat-china" />
           </transform>
         </section>
       </sections>
     </section>
-    -->
-  </sections>
+
+</sections>
 </transfor>

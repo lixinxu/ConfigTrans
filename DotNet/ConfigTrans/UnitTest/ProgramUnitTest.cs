@@ -54,12 +54,12 @@ namespace ConfigurationTransformation.UnitTest
         /// </summary>
         private static readonly ISet<string> ExpectedFiles = new HashSet<string>()
         {
-            "web.dev-eastus.config",
-            "web.dev-westus.config",
-            "web.prod-eastus.config",
-            "web.prod-westus.config",
-            "web.uat-eastus.config",
-            "web.uat-westus.config",
+            "ServiceConfiguration.dev-eastus.cscfg",
+            "ServiceConfiguration.dev-westus.cscfg",
+            "ServiceConfiguration.prod-eastus.cscfg",
+            "ServiceConfiguration.prod-westus.cscfg",
+            "ServiceConfiguration.uat-china.cscfg",
+            "ServiceConfiguration.uat-japan.cscfg",
         };
 
         #region GetParallelFlag

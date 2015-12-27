@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="MyCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="MyWebRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="item1" value="item1-global" />
+      <Setting name="item2" value="item2-prod" />
+      <Setting name="item3" value="item3-web-prod" />
+      <Setting name="item4" value="item4-prod-region" />
+      <Setting name="item5" value="item5-web-prod-region" />
+      <Setting name="item6" value="item6-prod-eastus" />
+      <Setting name="item7" value="item7-web-prod-eastus" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="SharedCertificate" thumbprint="prod certificate" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+  <Role name="MyWorkerRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="item1" value="item1-global" />
+      <Setting name="item2" value="item2-prod" />
+      <Setting name="item3" value="item3-worker-prod" />
+      <Setting name="item4" value="item4-prod-region" />
+      <Setting name="item5" value="item5-worker-prod-region" />
+      <Setting name="item6" value="item6-prod-eastus" />
+      <Setting name="item7" value="item7-worker-prod-eastus" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="SharedCertificate" thumbprint="prod certificate" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>

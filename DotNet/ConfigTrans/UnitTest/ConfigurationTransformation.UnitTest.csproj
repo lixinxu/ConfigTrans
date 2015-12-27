@@ -91,6 +91,12 @@
     <EmbeddedResource Include="FileTransformerTestData\web.uat-eastus.config" />
     <EmbeddedResource Include="FileTransformerTestData\web.uat-westus.config" />
     <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.Cloud.cscfg" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.dev-eastus.cscfg" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.dev-westus.cscfg" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.prod-eastus.cscfg" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.prod-westus.cscfg" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.uat-china.cscfg" />
+    <EmbeddedResource Include="ProgramTestData\ServiceConfiguration.uat-japan.cscfg" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TransformerTestData\DiffConfig.xml" />

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="MyCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="MyWebRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="item1" value="item1-global" />
+      <Setting name="item2" value="item2-dev" />
+      <Setting name="item3" value="item3-web-dev" />
+      <Setting name="item4" value="item4-dev-region" />
+      <Setting name="item5" value="item5-web-dev-region" />
+      <Setting name="item6" value="item6-dev-westus" />
+      <Setting name="item7" value="item7-web-dev-westus" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="SharedCertificate" thumbprint="dev certificate" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+  <Role name="MyWorkerRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="item1" value="item1-global" />
+      <Setting name="item2" value="item2-dev" />
+      <Setting name="item3" value="item3-worker-dev" />
+      <Setting name="item4" value="item4-dev-region" />
+      <Setting name="item5" value="item5-worker-dev-region" />
+      <Setting name="item6" value="item6-dev-westus" />
+      <Setting name="item7" value="item7-worker-dev-westus" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="SharedCertificate" thumbprint="dev certificate" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>
